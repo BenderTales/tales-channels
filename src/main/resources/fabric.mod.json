@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "chat-api",
+  "version": "${version}",
+  "name": "Chat Api",
+  "description": "",
+  "authors": [
+    "Nokorbis"
+  ],
+  "contact": {
+    "website": "tales-of-benders.com"
+  },
+  "license": "MIT",
+  "icon": "assets/chat-api/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.bendertales.mc.chatapi.client.ChatApiClient"
+    ],
+    "main": [
+      "com.bendertales.mc.chatapi.ChatApi"
+    ]
+  },
+  "mixins": [
+    "chat-api.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12.12",
+    "fabric": "*",
+    "minecraft": "1.18.1"
+  }
+}
