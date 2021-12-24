@@ -16,6 +16,7 @@ public final class ChatConstants {
 		public static final class Channels {
 			public static final Identifier LOCAL = new Identifier("chat", "local");
 			public static final Identifier GLOBAL = new Identifier("chat", "global");
+			public static final Identifier SUPPORT = new Identifier("chat", "support");
 			public static final Identifier STAFF = new Identifier("chat", "staff");
 			public static final Identifier ADMIN = new Identifier("chat", "administration");
 			public static final Identifier MODO = new Identifier("chat", "moderation");

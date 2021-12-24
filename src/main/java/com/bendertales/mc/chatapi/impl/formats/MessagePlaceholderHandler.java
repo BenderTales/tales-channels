@@ -1,12 +1,13 @@
 package com.bendertales.mc.chatapi.impl.formats;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.FormatHandler;
+import com.bendertales.mc.chatapi.api.MessageFormatter;
+import com.bendertales.mc.chatapi.api.PlaceholderHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public class MessageFormatHandler implements FormatHandler {
+public class MessagePlaceholderHandler implements PlaceholderHandler {
 
 	private static final String MESSAGE_PLACEHOLDER = "%MESSAGE%";
 
@@ -21,8 +22,8 @@ public class MessageFormatHandler implements FormatHandler {
 	}
 
 	@Override
-	public String handleMessage(String format, ServerPlayerEntity player, String message) {
-		return format.replace(MESSAGE_PLACEHOLDER, message);
+	public MessageFormatter getMessageFormatter() {
+		return (String format, ServerPlayerEntity player, String message) -> format.replace(MESSAGE_PLACEHOLDER, message);
 	}
 
 	@Override

@@ -4,12 +4,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.FormatHandler;
+import com.bendertales.mc.chatapi.api.MessageFormatter;
+import com.bendertales.mc.chatapi.api.PlaceholderHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public class DateTimeFormatHandler implements FormatHandler {
+public class DateTimePlaceholderHandler implements PlaceholderHandler {
 
 	private static final String HOUR_PLACEHOLDER = "%HH%";
 	private static final String MINUTES_PLACEHOLDER = "%mm%";
@@ -18,8 +19,6 @@ public class DateTimeFormatHandler implements FormatHandler {
 	private final DateTimeFormatter hoursFormatter = DateTimeFormatter.ofPattern("HH");
 	private final DateTimeFormatter minutesFormatter = DateTimeFormatter.ofPattern("mm");
 	private final DateTimeFormatter secondsFormatter = DateTimeFormatter.ofPattern("SS");
-
-
 
 	@Override
 	public int getDefaultPriorityOrder() {
@@ -34,11 +33,13 @@ public class DateTimeFormatHandler implements FormatHandler {
 	}
 
 	@Override
-	public String handleMessage(String format, ServerPlayerEntity player, String message) {
-		var now = LocalTime.now();
-		return format.replace(HOUR_PLACEHOLDER, now.format(hoursFormatter))
-		             .replace(MINUTES_PLACEHOLDER, now.format(minutesFormatter))
-		             .replace(SECONDS_PLACEHOLDER, now.format(secondsFormatter));
+	public MessageFormatter getMessageFormatter() {
+		return (String format, ServerPlayerEntity player, String message) -> {
+			var now = LocalTime.now();
+			return format.replace(HOUR_PLACEHOLDER, now.format(hoursFormatter))
+			             .replace(MINUTES_PLACEHOLDER, now.format(minutesFormatter))
+			             .replace(SECONDS_PLACEHOLDER, now.format(secondsFormatter));
+		};
 	}
 
 	@Override

@@ -3,14 +3,16 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.Channel;
+import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import static java.util.Collections.singleton;
 
-public class StaffChannel implements Channel {
+
+public class StaffChannel implements ChannelDefault {
 
 	private final ChatManager chatManager;
 
@@ -24,13 +26,13 @@ public class StaffChannel implements Channel {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getChannelUsabilityFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, "chat.channel.staff");
+	public Predicate<ServerPlayerEntity> getSenderFilter() {
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.staff"));
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getChannelRecipientFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, "chat.channel.staff");
+	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.staff"));
 	}
 
 	@Override

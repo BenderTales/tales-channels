@@ -4,13 +4,13 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.Channel;
+import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public class GlobalChannel implements Channel {
+public class GlobalChannel implements ChannelDefault {
 
 	private final ChatManager chatManager;
 
@@ -24,12 +24,12 @@ public class GlobalChannel implements Channel {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getChannelUsabilityFilter() {
+	public Predicate<ServerPlayerEntity> getSenderFilter() {
 		return (player) -> true;
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getChannelRecipientFilter() {
+	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
 		return (player) -> true;
 	}
 

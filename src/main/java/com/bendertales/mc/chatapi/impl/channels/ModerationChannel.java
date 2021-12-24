@@ -1,16 +1,19 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
+import java.util.Collections;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.Channel;
+import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import static java.util.Collections.singleton;
 
-public class ModerationChannel implements Channel {
+
+public class ModerationChannel implements ChannelDefault {
 
 	private final ChatManager chatManager;
 
@@ -24,13 +27,13 @@ public class ModerationChannel implements Channel {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getChannelUsabilityFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, "chat.channel.moderation");
+	public Predicate<ServerPlayerEntity> getSenderFilter() {
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.moderation"));
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getChannelRecipientFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, "chat.channel.moderation");
+	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.moderation"));
 	}
 
 	@Override
