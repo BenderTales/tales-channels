@@ -17,6 +17,10 @@ public class LocalChannel implements ChannelDefault {
 		this.chatManager = chatManager;
 	}
 
+	@Override
+	public String getPrefixSelector() {
+		return ".";
+	}
 
 	@Override
 	public String getDefaultFormat() {

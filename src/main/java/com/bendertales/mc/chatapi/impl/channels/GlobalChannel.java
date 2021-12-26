@@ -19,6 +19,11 @@ public class GlobalChannel implements ChannelDefault {
 	}
 
 	@Override
+	public String getPrefixSelector() {
+		return "!";
+	}
+
+	@Override
 	public String getDefaultFormat() {
 		return "[!]%PLAYER_NAME%> %MESSAGE%";
 	}

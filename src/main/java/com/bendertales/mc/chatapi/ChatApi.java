@@ -21,7 +21,7 @@ public class ChatApi implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		var chatManager = new ChatManager();
+		var chatManager = ChatManager.get();
 
 		CommandRegistrationCallback.EVENT.register(((dispatcher, dedicated) -> {
 			CommandRegistries.registerCommands(dispatcher, chatManager);
@@ -29,6 +29,8 @@ public class ChatApi implements ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			LOGGER.info("Registering format and channel handlers");
+			chatManager.setMinecraftServer(server);
+
 			Registry.FORMAT_HANDLERS.register(new MessagePlaceholderHandler());
 			Registry.FORMAT_HANDLERS.register(new PlayerNamePlaceholderHandler());
 			Registry.FORMAT_HANDLERS.register(new DateTimePlaceholderHandler());

@@ -3,47 +3,121 @@ package com.bendertales.mc.chatapi.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
+import com.bendertales.mc.chatapi.api.ChatException;
 import com.bendertales.mc.chatapi.api.Registry;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
+import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
+import net.minecraft.network.MessageType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 
 public class ChatManager {
 
-	private final Map<UUID, Set<Identifier>> hiddenChannelsByPlayer = new HashMap<>();
+	private static final ChatManager instance = new ChatManager();
+
+	public static ChatManager get() {
+		return instance;
+	}
+
+	private final Map<UUID, PlayerSettings>  playersSettingsById    = new HashMap<>();
 	private Map<Identifier, Channel>         channelsById;
 
+	private MinecraftServer minecraftServer;
+
 	public void reload() {
-		hiddenChannelsByPlayer.clear();
 		load();
 	}
 
 	public void load() {
+		//TODO load player settings
 		this.channelsById = buildConfiguredChannels();
 	}
 
-	public boolean isChannelHiddenForPlayer(Channel channel, ServerPlayerEntity player) {
-		var channels = hiddenChannelsByPlayer.get(player.getUuid());
-		if (channels == null) {
-			return false;
+	public void setMinecraftServer(MinecraftServer minecraftServer) {
+		this.minecraftServer = minecraftServer;
+	}
+
+	public void handleMessage(ServerPlayerEntity sender, String message) {
+		var channel = extractChannelFromMessage(message);
+		if (channel == null) {
+			channel = getPlayerCurrentChannel(sender);
 		}
-		return channels.contains(channel.id());
+		else {
+			message = message.substring(channel.selectorPrefix().length());
+		}
+
+		sendMessage(sender, message, channel);
+	}
+
+	public void sendMessage(ServerPlayerEntity sender, String message, Identifier channelId) throws ChatException {
+		var channel = channelsById.get(channelId);
+		if (channel == null) {
+			throw new ChatException("chat.channel.not_found");
+		}
+
+		sendMessage(sender, message, channel);
+	}
+
+	private void sendMessage(ServerPlayerEntity sender, String message, Channel channel) {
+		if (!channel.senderFilter().test(sender)) {
+			sender.sendMessage(Text.of("§4You cannot send a message in this channel"), MessageType.CHAT, Util.NIL_UUID);
+			return;
+		}
+
+		String formattedMessage = channel.formatMessage(sender, message);
+		var messageToSend = Text.of(formattedMessage);
+		minecraftServer.sendSystemMessage(messageToSend, sender.getUuid());
+		getPlayers().stream()
+	        .filter(channel.recipientsFilter())
+			.forEach(recipient -> {
+				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
+			});
+	}
+
+	private List<ServerPlayerEntity> getPlayers() {
+		return minecraftServer.getPlayerManager().getPlayerList();
+	}
+
+	private Channel extractChannelFromMessage(String message) {
+
+		for (Channel channel : channelsById.values()) {
+			if (channel.selectorPrefix() != null
+			    && message.startsWith(channel.selectorPrefix()) && !message.equals(channel.selectorPrefix())) {
+				return channel;
+			}
+		}
+
+		return null;
+	}
+
+	private Channel getPlayerCurrentChannel(ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		return playerSettings.getCurrentChannel();
+	}
+
+	public boolean isChannelHiddenForPlayer(Channel channel, ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		return playerSettings.isChannelHidden(channel);
+	}
+
+	private PlayerSettings getOrCreatePlayerSettings(ServerPlayerEntity player) {
+		return playersSettingsById.computeIfAbsent(player.getUuid(), id -> {
+			var settings = new PlayerSettings(id);
+			settings.setCurrentChannel(channelsById.get(ChatConstants.Ids.Channels.GLOBAL));
+			return settings;
+		});
 	}
 
 	public boolean toggleHiddenChannelForPlayer(Channel channel, ServerPlayerEntity player) {
-		var hiddenChannels = hiddenChannelsByPlayer.computeIfAbsent(player.getUuid(), u -> new HashSet<>());
-		var channelId = channel.id();
-		if (hiddenChannels.contains(channelId)) {
-			hiddenChannels.remove(channelId);
-			return false;
-		}
-		else {
-			hiddenChannels.add(channelId);
-			return true;
-		}
+		var playerSettings = getOrCreatePlayerSettings(player);
+		return playerSettings.toggleHiddenChannel(channel);
 	}
 
 	private HashMap<Identifier, Channel> buildConfiguredChannels() {
@@ -62,7 +136,8 @@ public class ChatManager {
                 .sorted(Comparator.comparingInt(Placeholder::applyOrder))
                 .toList();
 
-			var channel = new Channel(channelDefault.getId(), format, channelPlaceholders,
+			var channel = new Channel(channelDefault.getId(), channelDefault.getPrefixSelector(),
+			                          format, channelPlaceholders,
 			                          channelDefault.getRecipientsFilter(), channelDefault.getSenderFilter());
 
 			channelsById.put(channelDefault.getId(), channel);
@@ -71,4 +146,6 @@ public class ChatManager {
 		return channelsById;
 	}
 
+	private ChatManager() {
+	}
 }

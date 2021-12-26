@@ -20,6 +20,11 @@ public class SupportChannel implements ChannelDefault {
 	}
 
 	@Override
+	public String getPrefixSelector() {
+		return "?";
+	}
+
+	@Override
 	public String getDefaultFormat() {
 		return "[SUPPORT]%PLAYER_NAME%> %MESSAGE%";
 	}
