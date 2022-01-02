@@ -64,7 +64,7 @@ public class CmdList implements ModCommand {
 
 	@Override
 	public Collection<String> getRequiredPermissions() {
-		return List.of("chatapi.command.admin", "chatapi.command.list");
+		return List.of("chatapi.commands.admin", "chatapi.commands.list");
 	}
 
 	@Override

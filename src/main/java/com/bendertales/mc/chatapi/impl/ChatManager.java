@@ -83,6 +83,17 @@ public class ChatManager {
 			});
 	}
 
+	public void changeTargetedChannel(ServerPlayerEntity player, Identifier channelId) throws ChatException {
+		var targetChannel = channelsById.get(channelId);
+		if (targetChannel == null) {
+			throw new ChatException("Channel not found");
+		}
+
+		var playerSettings = getOrCreatePlayerSettings(player);
+		playerSettings.setCurrentChannel(targetChannel);
+		//TODO: save in file
+	}
+
 	private List<ServerPlayerEntity> getPlayers() {
 		return minecraftServer.getPlayerManager().getPlayerList();
 	}
