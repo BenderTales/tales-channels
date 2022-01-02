@@ -30,10 +30,11 @@ public interface ModCommand extends CommandRegistrationCallback, Command<ServerC
 		var requiredPermissions = getRequiredPermissions();
 
 		return (cmdSource) -> {
-			if (Perms.hasAny(cmdSource, requiredPermissions)) {
+			if (cmdSource.hasPermissionLevel(permissionLevel)
+				|| Perms.hasAny(cmdSource, requiredPermissions)) {
 				return true;
 			}
-			return cmdSource.hasPermissionLevel(permissionLevel);
+			return false;
 		};
 	}
 }

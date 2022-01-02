@@ -9,6 +9,7 @@ import com.bendertales.mc.chatapi.api.ChatException;
 import com.bendertales.mc.chatapi.api.Registry;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
+import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
 import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
@@ -23,6 +24,7 @@ public class ChatManager {
 	private static final ChatManager instance = new ChatManager();
 
 	public static ChatManager get() {
+		// Not a big fan of using singleton but necessary for the mixin
 		return instance;
 	}
 
@@ -83,6 +85,21 @@ public class ChatManager {
 
 	private List<ServerPlayerEntity> getPlayers() {
 		return minecraftServer.getPlayerManager().getPlayerList();
+	}
+
+	public List<PlayerChannelStatus> getPlayerChannelsStatus(ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		return channelsById.values().stream()
+			.filter(ch -> ch.recipientsFilter().test(player))
+			.map(ch -> {
+				var isCurrent = playerSettings.getCurrentChannel() == ch;
+				var isHidden = playerSettings.getHiddenChannels().contains(ch.id());
+				return new PlayerChannelStatus(ch, isCurrent, isHidden);
+			}).toList();
+	}
+
+	public Collection<Channel> getChannels() {
+		return channelsById.values();
 	}
 
 	private Channel extractChannelFromMessage(String message) {

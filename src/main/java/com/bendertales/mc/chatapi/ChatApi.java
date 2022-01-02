@@ -23,9 +23,7 @@ public class ChatApi implements ModInitializer {
 
 		var chatManager = ChatManager.get();
 
-		CommandRegistrationCallback.EVENT.register(((dispatcher, dedicated) -> {
-			CommandRegistries.registerCommands(dispatcher, chatManager);
-		}));
+		CommandRegistries.registerCommands(chatManager);
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			LOGGER.info("Registering format and channel handlers");
