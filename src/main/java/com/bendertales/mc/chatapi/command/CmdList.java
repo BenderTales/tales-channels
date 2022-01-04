@@ -3,20 +3,15 @@ package com.bendertales.mc.chatapi.command;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.text.AttributeSet;
-
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
