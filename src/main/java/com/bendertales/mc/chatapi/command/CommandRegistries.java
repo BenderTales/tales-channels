@@ -18,7 +18,8 @@ public class CommandRegistries {
 	private static Stream<ModCommand> buildCommands(ChatManager chatManager) {
 		return Stream.of(
 			new CmdList(chatManager),
-			new CmdTarget(chatManager)
+			new CmdTarget(chatManager),
+			new CmdChat(chatManager)
 		);
 	}
 
