@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.ChatException;
+import com.bendertales.mc.chatapi.api.MessageSender;
 import com.bendertales.mc.chatapi.api.Registry;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
@@ -19,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 
-public class ChatManager {
+public class ChatManager implements MessageSender {
 
 	private static final ChatManager instance = new ChatManager();
 
@@ -78,6 +79,7 @@ public class ChatManager {
 		minecraftServer.sendSystemMessage(messageToSend, sender.getUuid());
 		getPlayers().stream()
 	        .filter(channel.recipientsFilter())
+			.filter(p -> isChannelVisibleForPlayer(channel, p))
 			.forEach(recipient -> {
 				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
 			});
@@ -109,6 +111,10 @@ public class ChatManager {
 			}).toList();
 	}
 
+	public Optional<Channel> getChannel(Identifier channelId) {
+		return Optional.ofNullable(channelsById.get(channelId));
+	}
+
 	public Collection<Channel> getChannels() {
 		return channelsById.values();
 	}
@@ -135,6 +141,15 @@ public class ChatManager {
 		return playerSettings.isChannelHidden(channel);
 	}
 
+	public boolean isChannelVisibleForPlayer(Channel channel, ServerPlayerEntity player) {
+		return !isChannelHiddenForPlayer(channel, player);
+	}
+
+	public boolean toggleHiddenChannelForPlayer(Channel channel, ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		return playerSettings.toggleHiddenChannel(channel);
+	}
+
 	private PlayerSettings getOrCreatePlayerSettings(ServerPlayerEntity player) {
 		return playersSettingsById.computeIfAbsent(player.getUuid(), id -> {
 			var settings = new PlayerSettings(id);
@@ -143,10 +158,7 @@ public class ChatManager {
 		});
 	}
 
-	public boolean toggleHiddenChannelForPlayer(Channel channel, ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		return playerSettings.toggleHiddenChannel(channel);
-	}
+
 
 	private HashMap<Identifier, Channel> buildConfiguredChannels() {
 		var placeholdersById = Registry.FORMAT_HANDLERS.stream()

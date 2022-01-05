@@ -19,7 +19,8 @@ public class CommandRegistries {
 		return Stream.of(
 			new CmdList(chatManager),
 			new CmdTarget(chatManager),
-			new CmdChat(chatManager)
+			new CmdChat(chatManager),
+			new CmdHideToggle(chatManager)
 		);
 	}
 
