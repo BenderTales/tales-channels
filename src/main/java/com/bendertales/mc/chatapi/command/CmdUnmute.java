@@ -1,6 +1,8 @@
 package com.bendertales.mc.chatapi.command;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import com.bendertales.mc.chatapi.command.suggestions.SenderChannelsSuggestionProvider;
 import com.bendertales.mc.chatapi.impl.ChatManager;
@@ -20,11 +22,11 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 
-public class CmdMute implements ModCommand {
+public class CmdUnmute implements ModCommand {
 
 	private final ChatManager chatManager;
 
-	public CmdMute(ChatManager chatManager) {
+	public CmdUnmute(ChatManager chatManager) {
 		this.chatManager = chatManager;
 	}
 
@@ -32,59 +34,57 @@ public class CmdMute implements ModCommand {
 	public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
 		dispatcher.register(
 			literal("channel")
-				.then(literal("mute")
+				.then(literal("unmute")
 			        .requires(getRequirements())
-			        .then(argument("player", EntityArgumentType.player())
-		                .then(literal("*")
-	                        .executes(this::runAll))
-		                .then(argument("channel", IdentifierArgumentType.identifier())
-	                        .suggests(new SenderChannelsSuggestionProvider(chatManager))
-	                        .executes(this))
-			        )
-				)
+				        .then(argument("player", EntityArgumentType.player())
+				            .then(literal("*")
+			                    .executes(this::runAll))
+				            .then(argument("channel", IdentifierArgumentType.identifier())
+		                        .suggests(new SenderChannelsSuggestionProvider(chatManager))
+			                    .executes(this))))
 		);
 	}
 
 	@Override
 	public Collection<String> getRequiredPermissions() {
-		return List.of("chatapi.commands.admin","chatapi.commands.mute");
+		return List.of("chatapi.commands.admin", "chatapi.commands.unmute");
 	}
 
 	public int runAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		var cmdSource = context.getSource();
-		var playerSelector = context.getArgument("player", EntitySelector.class);
-		var player = playerSelector.getPlayer(cmdSource);
+		var targetPlayer = getTargetPlayer(context);
 
 		var channels = chatManager.getChannels();
-		chatManager.mutePlayerInChannels(player, channels);
 
-		cmdSource.sendFeedback(getSuccessMessage(player), true);
-
+		chatManager.unmutePlayerInChannels(targetPlayer, channels);
+		context.getSource().sendFeedback(getSuccessMessage(targetPlayer), true);
 		return channels.size();
 	}
 
 	@Override
 	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		var cmdSource = context.getSource();
-		var playerSelector = context.getArgument("player", EntitySelector.class);
-		var player = playerSelector.getPlayer(cmdSource);
+		var targetPlayer = getTargetPlayer(context);
 
 		var channelId = context.getArgument("channel", Identifier.class);
-		var optChannel = chatManager.getChannel(channelId);
-		if (optChannel.isEmpty()) {
+		var channel = chatManager.getChannel(channelId);
+		if (channel.isEmpty()) {
 			var msg = Text.of("Channel not found");
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(msg), msg);
 		}
 
-		chatManager.mutePlayerInChannels(player, Collections.singleton(optChannel.get()));
+		chatManager.unmutePlayerInChannels(targetPlayer, Collections.singleton(channel.get()));
+		context.getSource().sendFeedback(getSuccessMessage(targetPlayer), true);
+		return 0;
+	}
 
-		cmdSource.sendFeedback(getSuccessMessage(player), true);
-
-		return SINGLE_SUCCESS;
+	private ServerPlayerEntity getTargetPlayer(CommandContext<ServerCommandSource> context)
+	throws CommandSyntaxException {
+		var cmdSource = context.getSource();
+		var playerSelector = context.getArgument("player", EntitySelector.class);
+		return playerSelector.getPlayer(cmdSource);
 	}
 
 	private Text getSuccessMessage(ServerPlayerEntity player) {
-		return Text.of(String.format("%s is now muted", player.getName().asString()));
+		return Text.of(String.format("%s is now allowed to speak", player.getName().asString()));
 	}
 
 

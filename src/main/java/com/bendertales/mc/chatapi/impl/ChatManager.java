@@ -17,7 +17,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 
 public class ChatManager implements MessageSender {
@@ -70,7 +69,13 @@ public class ChatManager implements MessageSender {
 
 	private void sendMessage(ServerPlayerEntity sender, String message, Channel channel) {
 		if (!channel.senderFilter().test(sender)) {
-			sender.sendMessage(Text.of("§4You cannot send a message in this channel"), MessageType.CHAT, Util.NIL_UUID);
+			sender.sendMessage(Text.of("§4You cannot send a message in this channel."), false);
+			return;
+		}
+
+		var senderSettings = getOrCreatePlayerSettings(sender);
+		if (senderSettings.isMutedInChannel(channel)) {
+			sender.sendMessage(Text.of("§4You are muted in this channel."), false);
 			return;
 		}
 
@@ -158,8 +163,6 @@ public class ChatManager implements MessageSender {
 		});
 	}
 
-
-
 	private HashMap<Identifier, Channel> buildConfiguredChannels() {
 		var placeholdersById = Registry.FORMAT_HANDLERS.stream()
             .map(ph -> new Placeholder(ph.getId(), ph.getDefaultPriorityOrder(), ph.getMessageFormatter()))
@@ -187,5 +190,15 @@ public class ChatManager implements MessageSender {
 	}
 
 	private ChatManager() {
+	}
+
+	public void mutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channelsToMute) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		playerSettings.muteChannels(channelsToMute);
+	}
+
+	public void unmutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channels) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		playerSettings.unmuteChannels(channels);
 	}
 }

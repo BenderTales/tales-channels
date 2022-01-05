@@ -20,7 +20,9 @@ public class CommandRegistries {
 			new CmdList(chatManager),
 			new CmdTarget(chatManager),
 			new CmdChat(chatManager),
-			new CmdHideToggle(chatManager)
+			new CmdHideToggle(chatManager),
+			new CmdMute(chatManager),
+			new CmdUnmute(chatManager)
 		);
 	}
 
