@@ -1,5 +1,6 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
@@ -16,12 +17,6 @@ public class HelpersChannel implements ChannelDefault {
 
 	public static final String PERMISSION = "chatapi.channels.helpers";
 
-	private final ChatManager chatManager;
-
-	public HelpersChannel(ChatManager chatManager) {
-		this.chatManager = chatManager;
-	}
-
 	@Override
 	public String getDefaultFormat() {
 		return "[Help]%PLAYER_NAME%> %MESSAGE%";
@@ -33,9 +28,10 @@ public class HelpersChannel implements ChannelDefault {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		//TODO : Check channel is not muted
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
+	public BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> getRecipientsFilter() {
+		return (sender, player) -> sender.equals(player)
+	       || Perms.isOp(player)
+	       || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override

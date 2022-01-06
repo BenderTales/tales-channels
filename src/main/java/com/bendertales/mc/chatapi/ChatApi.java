@@ -33,13 +33,13 @@ public class ChatApi implements ModInitializer {
 			Registry.FORMAT_HANDLERS.register(new PlayerNamePlaceholderHandler());
 			Registry.FORMAT_HANDLERS.register(new DateTimePlaceholderHandler());
 
-			Registry.CHANNEL_HANDLERS.register(new LocalChannel(chatManager));
-			Registry.CHANNEL_HANDLERS.register(new GlobalChannel(chatManager));
-			Registry.CHANNEL_HANDLERS.register(new SupportChannel(chatManager));
-			Registry.CHANNEL_HANDLERS.register(new StaffChannel(chatManager));
-			Registry.CHANNEL_HANDLERS.register(new HelpersChannel(chatManager));
-			Registry.CHANNEL_HANDLERS.register(new ModerationChannel(chatManager));
-			Registry.CHANNEL_HANDLERS.register(new AdminChannel(chatManager));
+			Registry.CHANNEL_HANDLERS.register(new LocalChannel());
+			Registry.CHANNEL_HANDLERS.register(new GlobalChannel());
+			Registry.CHANNEL_HANDLERS.register(new SupportChannel());
+			Registry.CHANNEL_HANDLERS.register(new StaffChannel());
+			Registry.CHANNEL_HANDLERS.register(new HelpersChannel());
+			Registry.CHANNEL_HANDLERS.register(new ModerationChannel());
+			Registry.CHANNEL_HANDLERS.register(new AdminChannel());
 		});
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {

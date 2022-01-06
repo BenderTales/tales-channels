@@ -1,6 +1,7 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
@@ -15,12 +16,6 @@ public class SupportChannel implements ChannelDefault {
 
 	public static final String SEND_PERMISSION = "chatapi.channels.support.send";
 	public static final String READ_PERMISSION = "chatapi.channels.support.read";
-
-	private final ChatManager chatManager;
-
-	public SupportChannel(ChatManager chatManager) {
-		this.chatManager = chatManager;
-	}
 
 	@Override
 	public String getPrefixSelector() {
@@ -38,8 +33,10 @@ public class SupportChannel implements ChannelDefault {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, List.of(READ_PERMISSION));
+	public BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> getRecipientsFilter() {
+		return (sender, player) -> sender.equals(player)
+            || Perms.isOp(player)
+            || Perms.hasAny(player, List.of(READ_PERMISSION));
 	}
 
 	@Override

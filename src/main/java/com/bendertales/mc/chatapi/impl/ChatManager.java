@@ -83,8 +83,8 @@ public class ChatManager implements MessageSender {
 		var messageToSend = Text.of(formattedMessage);
 		minecraftServer.sendSystemMessage(messageToSend, sender.getUuid());
 		getPlayers().stream()
-	        .filter(channel.recipientsFilter())
-			.filter(p -> isChannelVisibleForPlayer(channel, p))
+            .filter(p -> isChannelVisibleForPlayer(channel, p))
+	        .filter(r -> channel.recipientsFilter().apply(sender, r))
 			.forEach(recipient -> {
 				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
 			});
@@ -105,10 +105,10 @@ public class ChatManager implements MessageSender {
 		return minecraftServer.getPlayerManager().getPlayerList();
 	}
 
-	public List<PlayerChannelStatus> getPlayerChannelsStatus(ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
+	public List<PlayerChannelStatus> getPlayerChannelsStatus(ServerPlayerEntity sender) {
+		var playerSettings = getOrCreatePlayerSettings(sender);
 		return channelsById.values().stream()
-			.filter(ch -> ch.recipientsFilter().test(player))
+			.filter(ch -> ch.senderFilter().test(sender))
 			.map(ch -> {
 				var isCurrent = playerSettings.getCurrentChannel() == ch;
 				var isHidden = playerSettings.getHiddenChannels().contains(ch.id());

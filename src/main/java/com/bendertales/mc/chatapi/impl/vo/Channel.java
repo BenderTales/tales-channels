@@ -1,6 +1,7 @@
 package com.bendertales.mc.chatapi.impl.vo;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,7 +13,7 @@ public record Channel(
 		String selectorPrefix,
 		String format,
 		Collection<Placeholder> placeholderHandlers,
-		Predicate<ServerPlayerEntity> recipientsFilter,
+		BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> recipientsFilter,
 		Predicate<ServerPlayerEntity> senderFilter
 ) {
 

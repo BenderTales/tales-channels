@@ -1,5 +1,6 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
@@ -16,12 +17,6 @@ public class StaffChannel implements ChannelDefault {
 
 	public static final String PERMISSION = "chatapi.channels.staff";
 
-	private final ChatManager chatManager;
-
-	public StaffChannel(ChatManager chatManager) {
-		this.chatManager = chatManager;
-	}
-
 	@Override
 	public String getDefaultFormat() {
 		return "[STAFF]%PLAYER_NAME%> %MESSAGE%";
@@ -33,8 +28,10 @@ public class StaffChannel implements ChannelDefault {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
+	public BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> getRecipientsFilter() {
+		return (sender, player) -> sender.equals(player)
+	       || Perms.isOp(player)
+	       || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
@@ -10,12 +11,6 @@ import net.minecraft.util.Identifier;
 
 
 public class LocalChannel implements ChannelDefault {
-
-	private final ChatManager chatManager;
-
-	public LocalChannel(ChatManager chatManager) {
-		this.chatManager = chatManager;
-	}
 
 	@Override
 	public String getPrefixSelector() {
@@ -33,8 +28,10 @@ public class LocalChannel implements ChannelDefault {
 	}
 
 	@Override
-	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		return (p) -> true;
+	public BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> getRecipientsFilter() {
+		return (sender, recipient) -> sender.equals(recipient)
+            || (sender.getWorld().equals(recipient.getWorld())
+			&& sender.getBlockPos().isWithinDistance(recipient.getBlockPos(), 48.));
 	}
 
 	@Override
