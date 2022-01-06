@@ -13,6 +13,9 @@ import net.minecraft.util.Identifier;
 
 public class SupportChannel implements ChannelDefault {
 
+	public static final String SEND_PERMISSION = "chatapi.channels.support.send";
+	public static final String READ_PERMISSION = "chatapi.channels.support.read";
+
 	private final ChatManager chatManager;
 
 	public SupportChannel(ChatManager chatManager) {
@@ -31,12 +34,12 @@ public class SupportChannel implements ChannelDefault {
 
 	@Override
 	public Predicate<ServerPlayerEntity> getSenderFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, List.of("chat.channel.support.send"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, List.of(SEND_PERMISSION));
 	}
 
 	@Override
 	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, List.of("chat.channel.support.read"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, List.of(READ_PERMISSION));
 	}
 
 	@Override

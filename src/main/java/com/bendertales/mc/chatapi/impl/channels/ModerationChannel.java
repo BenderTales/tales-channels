@@ -1,6 +1,5 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
-import java.util.Collections;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
@@ -15,6 +14,8 @@ import static java.util.Collections.singleton;
 
 public class ModerationChannel implements ChannelDefault {
 
+	public static final String PERMISSION = "chatapi.channels.moderation";
+
 	private final ChatManager chatManager;
 
 	public ModerationChannel(ChatManager chatManager) {
@@ -28,12 +29,12 @@ public class ModerationChannel implements ChannelDefault {
 
 	@Override
 	public Predicate<ServerPlayerEntity> getSenderFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.moderation"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override
 	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.moderation"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override

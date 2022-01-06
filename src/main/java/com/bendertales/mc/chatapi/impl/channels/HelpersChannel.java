@@ -14,6 +14,8 @@ import static java.util.Collections.singleton;
 
 public class HelpersChannel implements ChannelDefault {
 
+	public static final String PERMISSION = "chatapi.channels.helpers";
+
 	private final ChatManager chatManager;
 
 	public HelpersChannel(ChatManager chatManager) {
@@ -27,13 +29,13 @@ public class HelpersChannel implements ChannelDefault {
 
 	@Override
 	public Predicate<ServerPlayerEntity> getSenderFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.helpers"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override
 	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
 		//TODO : Check channel is not muted
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.helpers"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override

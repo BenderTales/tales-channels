@@ -14,6 +14,8 @@ import static java.util.Collections.singleton;
 
 public class StaffChannel implements ChannelDefault {
 
+	public static final String PERMISSION = "chatapi.channels.staff";
+
 	private final ChatManager chatManager;
 
 	public StaffChannel(ChatManager chatManager) {
@@ -27,12 +29,12 @@ public class StaffChannel implements ChannelDefault {
 
 	@Override
 	public Predicate<ServerPlayerEntity> getSenderFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.staff"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override
 	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
-		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton("chat.channel.staff"));
+		return (player) -> Perms.isOp(player) || Perms.hasAny(player, singleton(PERMISSION));
 	}
 
 	@Override

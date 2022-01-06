@@ -14,6 +14,8 @@ import static java.util.Collections.singleton;
 
 public class AdminChannel implements ChannelDefault {
 
+	public static final String PERMISSION = "chatapi.channels.admins";
+
 	private final ChatManager chatManager;
 
 	public AdminChannel(ChatManager chatManager) {
@@ -28,13 +30,13 @@ public class AdminChannel implements ChannelDefault {
 	@Override
 	public Predicate<ServerPlayerEntity> getSenderFilter() {
 		return (player -> Perms.isOp(player)
-		                  || Perms.hasAny(player, singleton("chat.channel.admin")));
+		                  || Perms.hasAny(player, singleton(PERMISSION)));
 	}
 
 	@Override
 	public Predicate<ServerPlayerEntity> getRecipientsFilter() {
 		return (player -> Perms.isOp(player)
-                  || Perms.hasAny(player, singleton("chat.channel.admin")));
+                  || Perms.hasAny(player, singleton(PERMISSION)));
 	}
 
 	@Override
