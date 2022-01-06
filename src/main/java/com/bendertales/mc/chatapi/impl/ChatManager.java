@@ -3,13 +3,10 @@ package com.bendertales.mc.chatapi.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.*;
+import com.bendertales.mc.chatapi.api.ChatException;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
-import com.bendertales.mc.chatapi.impl.vo.Channel;
-import com.bendertales.mc.chatapi.impl.vo.Placeholder;
-import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
-import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
+import com.bendertales.mc.chatapi.impl.vo.*;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,8 +23,8 @@ public class ChatManager implements MessageSender {
 		return instance;
 	}
 
-	private final Map<UUID, PlayerSettings>  playersSettingsById    = new HashMap<>();
-	private Map<Identifier, Channel>         channelsById;
+	// private final Map<UUID, ChatApiPlayerSettings> playersSettingsById = new HashMap<>();
+	private Map<Identifier, Channel>               channelsById;
 
 	private MinecraftServer minecraftServer;
 
@@ -47,7 +44,13 @@ public class ChatManager implements MessageSender {
 	public void handleMessage(ServerPlayerEntity sender, String message) throws ChatException {
 		var channel = extractChannelFromMessage(message);
 		if (channel == null) {
-			channel = getPlayerCurrentChannel(sender);
+			var channelId = getPlayerCurrentChannel(sender);
+
+			//TODO : New player has no id
+			channel = channelsById.get(channelId);
+			if (channel == null) {
+				throw new ChatException("Channel not found");
+			}
 		}
 		else {
 			message = message.substring(channel.selectorPrefix().length());
@@ -77,9 +80,7 @@ public class ChatManager implements MessageSender {
 		        var options = new RecipientFilterOptions(hasEnabledSocialSpy(r));
 		        return channel.recipientsFilter().filterRecipient(sender, r, options);
 	        })
-			.forEach(recipient -> {
-				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
-			});
+			.forEach(recipient -> recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid()));
 	}
 
 	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
@@ -108,7 +109,7 @@ public class ChatManager implements MessageSender {
 		}
 
 		var playerSettings = getOrCreatePlayerSettings(player);
-		playerSettings.setCurrentChannel(targetChannel);
+		playerSettings.setCurrentChannel(targetChannel.id());
 		//TODO: save in file
 	}
 
@@ -121,7 +122,7 @@ public class ChatManager implements MessageSender {
 		return channelsById.values().stream()
 			.filter(ch -> ch.senderFilter().test(sender))
 			.map(ch -> {
-				var isCurrent = playerSettings.getCurrentChannel() == ch;
+				var isCurrent = ch.id().equals(playerSettings.getCurrentChannel());
 				var isHidden = playerSettings.getHiddenChannels().contains(ch.id());
 				return new PlayerChannelStatus(ch, isCurrent, isHidden);
 			}).toList();
@@ -147,7 +148,7 @@ public class ChatManager implements MessageSender {
 		return null;
 	}
 
-	private Channel getPlayerCurrentChannel(ServerPlayerEntity player) {
+	private Identifier getPlayerCurrentChannel(ServerPlayerEntity player) {
 		var playerSettings = getOrCreatePlayerSettings(player);
 		return playerSettings.getCurrentChannel();
 	}
@@ -166,12 +167,9 @@ public class ChatManager implements MessageSender {
 		return playerSettings.toggleHiddenChannel(channel);
 	}
 
-	private PlayerSettings getOrCreatePlayerSettings(ServerPlayerEntity player) {
-		return playersSettingsById.computeIfAbsent(player.getUuid(), id -> {
-			var settings = new PlayerSettings(id);
-			settings.setCurrentChannel(channelsById.get(ChatConstants.Ids.Channels.GLOBAL));
-			return settings;
-		});
+	private ChatApiPlayerSettings getOrCreatePlayerSettings(ServerPlayerEntity player) {
+		ChatApiConfigurable chatPlayer = (ChatApiConfigurable) player;
+		return chatPlayer.getChatApiPlayerSettings();
 	}
 
 	private HashMap<Identifier, Channel> buildConfiguredChannels() {

@@ -44,6 +44,7 @@ public class CmdSocialSpy implements ModCommand {
 	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		var cmdSource = context.getSource();
 		var player = cmdSource.getPlayer();
+
 		chatManager.enableSocialSpy(player);
 		cmdSource.sendFeedback(new LiteralText("Social spy enabled").formatted(Formatting.GREEN), true);
 		return 0;
