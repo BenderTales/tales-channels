@@ -21,7 +21,9 @@ public class CommandRegistries {
 
 	private static Stream<ModCommand> buildCommands(ChatManager chatManager) {
 		return Stream.of(
+			new CmdReload(chatManager),
 			new CmdList(chatManager),
+			new CmdSocialSpy(chatManager),
 			new CmdTarget(chatManager),
 			new CmdChat(chatManager),
 			new CmdHideToggle(chatManager),

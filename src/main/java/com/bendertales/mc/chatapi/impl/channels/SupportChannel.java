@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
+import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,8 +34,8 @@ public class SupportChannel implements ChannelDefault {
 	}
 
 	@Override
-	public BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> getRecipientsFilter() {
-		return (sender, player) -> sender.equals(player)
+	public RecipientFilter getRecipientsFilter() {
+		return (sender, player, options) -> sender.equals(player)
             || Perms.isOp(player)
             || Perms.hasAny(player, List.of(READ_PERMISSION));
 	}

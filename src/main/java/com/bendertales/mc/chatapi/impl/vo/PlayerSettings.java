@@ -15,6 +15,7 @@ public class PlayerSettings {
 	private final ObjectSet<Identifier> hiddenChannels = new ObjectOpenHashSet<>();
 	private final ObjectSet<Identifier> mutedChannels = new ObjectOpenHashSet<>();
 	private       Channel               currentChannel;
+	private boolean enabledSocialSpy = false;
 
 	public PlayerSettings(UUID playerUuid) {
 		this.playerUuid = playerUuid;
@@ -62,5 +63,13 @@ public class PlayerSettings {
 
 	public void unmuteChannels(Collection<Channel> channels) {
 		channels.stream().map(Channel::id).forEach(mutedChannels::remove);
+	}
+
+	public boolean isEnabledSocialSpy() {
+		return enabledSocialSpy;
+	}
+
+	public void setEnabledSocialSpy(boolean enabledSocialSpy) {
+		this.enabledSocialSpy = enabledSocialSpy;
 	}
 }

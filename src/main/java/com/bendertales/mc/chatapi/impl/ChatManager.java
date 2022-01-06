@@ -1,14 +1,11 @@
 package com.bendertales.mc.chatapi.impl;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.ChannelDefault;
-import com.bendertales.mc.chatapi.api.ChatException;
-import com.bendertales.mc.chatapi.api.MessageSender;
-import com.bendertales.mc.chatapi.api.Registry;
+import com.bendertales.mc.chatapi.api.*;
+import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
@@ -62,7 +59,7 @@ public class ChatManager implements MessageSender {
 	public void sendMessage(ServerPlayerEntity sender, String message, Identifier channelId) throws ChatException {
 		var channel = channelsById.get(channelId);
 		if (channel == null) {
-			throw new ChatException("chat.channel.not_found");
+			throw new ChatException("Channel not found");
 		}
 
 		sendMessage(sender, message, channel);
@@ -76,7 +73,10 @@ public class ChatManager implements MessageSender {
 		minecraftServer.sendSystemMessage(messageToSend, sender.getUuid());
 		getPlayers().stream()
             .filter(p -> isChannelVisibleForPlayer(channel, p))
-	        .filter(r -> channel.recipientsFilter().apply(sender, r))
+	        .filter(r -> {
+		        var options = new RecipientFilterOptions(hasEnabledSocialSpy(r));
+		        return channel.recipientsFilter().filterRecipient(sender, r, options);
+	        })
 			.forEach(recipient -> {
 				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
 			});
@@ -91,6 +91,14 @@ public class ChatManager implements MessageSender {
 		if (senderSettings.isMutedInChannel(channel)) {
 			throw new ChatException("§4You are muted in this channel.");
 		}
+	}
+
+	private boolean hasEnabledSocialSpy(ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		if (playerSettings.isEnabledSocialSpy()) {
+			return Perms.isOp(player) || Perms.hasAny(player, List.of("chatapi.commands.admin", "chatapi.commands.socialspy"));
+		}
+		return false;
 	}
 
 	public void changeTargetedChannel(ServerPlayerEntity player, Identifier channelId) throws ChatException {
@@ -203,5 +211,15 @@ public class ChatManager implements MessageSender {
 	public void unmutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channels) {
 		var playerSettings = getOrCreatePlayerSettings(player);
 		playerSettings.unmuteChannels(channels);
+	}
+
+	public void enableSocialSpy(ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		playerSettings.setEnabledSocialSpy(true);
+	}
+
+	public void disableSocialSpy(ServerPlayerEntity player) {
+		var playerSettings = getOrCreatePlayerSettings(player);
+		playerSettings.setEnabledSocialSpy(false);
 	}
 }

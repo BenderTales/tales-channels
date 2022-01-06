@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
+import com.bendertales.mc.chatapi.api.RecipientFilter;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -33,12 +34,12 @@ public class GlobalChannel implements ChannelDefault {
 	}
 
 	@Override
-	public BiFunction<ServerPlayerEntity, ServerPlayerEntity, Boolean> getRecipientsFilter() {
+	public RecipientFilter getRecipientsFilter() {
 		/* return (sender, recipient) -> sender.equals(recipient)
             || Perms.isOp(recipient)
             || Perms.hasAny(recipient, singleton(PERMISSION));*/
 
-		return (sender, recipient) -> true;
+		return (sender, recipient, options) -> true;
 	}
 
 	@Override
