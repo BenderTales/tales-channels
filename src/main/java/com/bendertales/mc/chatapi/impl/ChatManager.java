@@ -1,6 +1,7 @@
 package com.bendertales.mc.chatapi.impl;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.bendertales.mc.chatapi.ChatConstants;
@@ -46,7 +47,7 @@ public class ChatManager implements MessageSender {
 		this.minecraftServer = minecraftServer;
 	}
 
-	public void handleMessage(ServerPlayerEntity sender, String message) {
+	public void handleMessage(ServerPlayerEntity sender, String message) throws ChatException {
 		var channel = extractChannelFromMessage(message);
 		if (channel == null) {
 			channel = getPlayerCurrentChannel(sender);
@@ -67,17 +68,8 @@ public class ChatManager implements MessageSender {
 		sendMessage(sender, message, channel);
 	}
 
-	private void sendMessage(ServerPlayerEntity sender, String message, Channel channel) {
-		if (!channel.senderFilter().test(sender)) {
-			sender.sendMessage(Text.of("§4You cannot send a message in this channel."), false);
-			return;
-		}
-
-		var senderSettings = getOrCreatePlayerSettings(sender);
-		if (senderSettings.isMutedInChannel(channel)) {
-			sender.sendMessage(Text.of("§4You are muted in this channel."), false);
-			return;
-		}
+	private void sendMessage(ServerPlayerEntity sender, String message, Channel channel) throws ChatException {
+		ensureSenderIsAllowedInChannel(sender, channel);
 
 		String formattedMessage = channel.formatMessage(sender, message);
 		var messageToSend = Text.of(formattedMessage);
@@ -88,6 +80,17 @@ public class ChatManager implements MessageSender {
 			.forEach(recipient -> {
 				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
 			});
+	}
+
+	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
+		if (!channel.senderFilter().test(sender)) {
+			throw new ChatException("§4You cannot send a message in this channel.");
+		}
+
+		var senderSettings = getOrCreatePlayerSettings(sender);
+		if (senderSettings.isMutedInChannel(channel)) {
+			throw new ChatException("§4You are muted in this channel.");
+		}
 	}
 
 	public void changeTargetedChannel(ServerPlayerEntity player, Identifier channelId) throws ChatException {

@@ -3,6 +3,7 @@ package com.bendertales.mc.chatapi.mixin;
 import java.util.UUID;
 import java.util.function.Function;
 
+import com.bendertales.mc.chatapi.api.ChatException;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.PlayerManager;
@@ -24,7 +25,12 @@ public class ServerPlayNetworkHandlerMixin {
 
 	@Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
 	private void replaceChatMessage(PlayerManager playerManager, Text serverMessage, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType playerMessageType, UUID sender, TextStream.Message message) {
-		ChatManager.get().handleMessage(player, message.getRaw());
+		try {
+			ChatManager.get().handleMessage(player, message.getRaw());
+		}
+		catch (ChatException e) {
+			player.sendMessage(Text.of(e.getMessage()), false);
+		}
 	}
 
 }
