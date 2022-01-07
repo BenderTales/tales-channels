@@ -1,13 +1,11 @@
 package com.bendertales.mc.chatapi.impl;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.*;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
-import com.bendertales.mc.chatapi.impl.vo.Placeholder;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
 import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
 import net.minecraft.network.MessageType;
@@ -29,6 +27,8 @@ public class ChatManager implements MessageSender {
 	private final Map<UUID, PlayerSettings>  playersSettingsById    = new HashMap<>();
 	private Map<Identifier, Channel>         channelsById;
 
+	private final ConfigurationManager configurationManager = new ConfigurationManager();
+
 	private MinecraftServer minecraftServer;
 
 	public void reload() {
@@ -37,7 +37,8 @@ public class ChatManager implements MessageSender {
 
 	public void load() {
 		//TODO load player settings
-		this.channelsById = buildConfiguredChannels();
+		var settings = configurationManager.buildConfiguredChannels();
+		this.channelsById = settings.channels();
 	}
 
 	public void setMinecraftServer(MinecraftServer minecraftServer) {
@@ -77,9 +78,7 @@ public class ChatManager implements MessageSender {
 		        var options = new RecipientFilterOptions(hasEnabledSocialSpy(r));
 		        return channel.recipientsFilter().filterRecipient(sender, r, options);
 	        })
-			.forEach(recipient -> {
-				recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid());
-			});
+			.forEach(recipient -> recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid()));
 	}
 
 	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
@@ -174,31 +173,7 @@ public class ChatManager implements MessageSender {
 		});
 	}
 
-	private HashMap<Identifier, Channel> buildConfiguredChannels() {
-		var placeholdersById = Registry.FORMAT_HANDLERS.stream()
-            .map(ph -> new Placeholder(ph.getId(), ph.getDefaultPriorityOrder(), ph.getMessageFormatter()))
-            .collect(Collectors.toMap(Placeholder::id, p -> p));
 
-		var channelsById = new HashMap<Identifier, Channel>();
-
-		for (ChannelDefault channelDefault : Registry.CHANNEL_HANDLERS) {
-			var format = channelDefault.getDefaultFormat();
-
-			var channelPlaceholders = Registry.FORMAT_HANDLERS.stream()
-                .filter(ph -> ph.shouldApplyFormat(format))
-                .map(ph -> placeholdersById.get(ph.getId()))
-                .sorted(Comparator.comparingInt(Placeholder::applyOrder))
-                .toList();
-
-			var channel = new Channel(channelDefault.getId(), channelDefault.getPrefixSelector(),
-			                          format, channelPlaceholders,
-			                          channelDefault.getRecipientsFilter(), channelDefault.getSenderFilter());
-
-			channelsById.put(channelDefault.getId(), channel);
-		}
-
-		return channelsById;
-	}
 
 	private ChatManager() {
 	}

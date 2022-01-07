@@ -1,6 +1,6 @@
 package com.bendertales.mc.chatapi.config;
 
-public class FormatConfiguration {
+public class PlaceholderProperties {
 
 	private int applicationOrder;
 

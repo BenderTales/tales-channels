@@ -7,11 +7,12 @@ import net.minecraft.util.Identifier;
 
 public class ModConfiguration {
 
-	private Identifier defaultChannel;
-	private ChannelConfiguration privateMessageConfiguration;
+	private Identifier        defaultChannel;
+	private int localChannelDistance;
+	private ChannelProperties privateMessageConfiguration;
 
-	private Map<Identifier, FormatConfiguration> formats;
-	private Map<Identifier, ChannelConfiguration> channels;
+	private Map<Identifier, PlaceholderProperties> placeholders;
+	private Map<Identifier, ChannelProperties>     channels;
 
 	public Identifier getDefaultChannel() {
 		return defaultChannel;
@@ -21,27 +22,35 @@ public class ModConfiguration {
 		this.defaultChannel = defaultChannel;
 	}
 
-	public ChannelConfiguration getPrivateMessageConfiguration() {
+	public int getLocalChannelDistance() {
+		return localChannelDistance;
+	}
+
+	public void setLocalChannelDistance(int localChannelDistance) {
+		this.localChannelDistance = localChannelDistance;
+	}
+
+	public ChannelProperties getPrivateMessageConfiguration() {
 		return privateMessageConfiguration;
 	}
 
-	public void setPrivateMessageConfiguration(ChannelConfiguration privateMessageConfiguration) {
+	public void setPrivateMessageConfiguration(ChannelProperties privateMessageConfiguration) {
 		this.privateMessageConfiguration = privateMessageConfiguration;
 	}
 
-	public Map<Identifier, FormatConfiguration> getFormats() {
-		return formats;
+	public Map<Identifier, PlaceholderProperties> getPlaceholders() {
+		return placeholders;
 	}
 
-	public void setFormats(Map<Identifier, FormatConfiguration> formats) {
-		this.formats = formats;
+	public void setPlaceholders(Map<Identifier, PlaceholderProperties> placeholders) {
+		this.placeholders = placeholders;
 	}
 
-	public Map<Identifier, ChannelConfiguration> getChannels() {
+	public Map<Identifier, ChannelProperties> getChannels() {
 		return channels;
 	}
 
-	public void setChannels(Map<Identifier, ChannelConfiguration> channels) {
+	public void setChannels(Map<Identifier, ChannelProperties> channels) {
 		this.channels = channels;
 	}
 }
