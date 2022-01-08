@@ -15,6 +15,7 @@ import com.bendertales.mc.chatapi.api.Registry;
 import com.bendertales.mc.chatapi.config.ChannelProperties;
 import com.bendertales.mc.chatapi.config.ModConfiguration;
 import com.bendertales.mc.chatapi.config.PlaceholderProperties;
+import com.bendertales.mc.chatapi.config.serialization.IdentifierSerializer;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
 import com.bendertales.mc.chatapi.impl.vo.Settings;
@@ -86,7 +87,7 @@ public class ConfigurationManager {
 		}
 
 		var fileContent = Files.readString(configFile);
-		Gson gson = new GsonBuilder().create();
+		Gson gson = getGson();
 		return gson.fromJson(fileContent, ModConfiguration.class);
 	}
 
@@ -161,9 +162,17 @@ public class ConfigurationManager {
 			Files.createDirectories(configFile.getParent());
 		}
 
-		var gson = new GsonBuilder().create();
+		var gson = getGson();
 		var configurationJson = gson.toJson(modConfiguration, ModConfiguration.class);
 		Files.writeString(configFile, configurationJson);
+	}
+
+	@NotNull
+	private Gson getGson() {
+		return new GsonBuilder()
+				.setPrettyPrinting()
+				.registerTypeAdapter(Identifier.class, new IdentifierSerializer())
+				.create();
 	}
 
 	private record ChannelStruct(

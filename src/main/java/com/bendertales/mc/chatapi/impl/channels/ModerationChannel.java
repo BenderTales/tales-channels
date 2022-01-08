@@ -1,6 +1,5 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;

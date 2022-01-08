@@ -1,12 +1,10 @@
 package com.bendertales.mc.chatapi.impl.channels;
 
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
-import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;

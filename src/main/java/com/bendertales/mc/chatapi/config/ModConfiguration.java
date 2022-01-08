@@ -9,7 +9,8 @@ public class ModConfiguration {
 
 	private Identifier        defaultChannel;
 	private int localChannelDistance;
-	private ChannelProperties privateMessageConfiguration;
+
+	private PrivateMessageProperties privateMessages;
 
 	private Map<Identifier, PlaceholderProperties> placeholders;
 	private Map<Identifier, ChannelProperties>     channels;
@@ -30,12 +31,12 @@ public class ModConfiguration {
 		this.localChannelDistance = localChannelDistance;
 	}
 
-	public ChannelProperties getPrivateMessageConfiguration() {
-		return privateMessageConfiguration;
+	public PrivateMessageProperties getPrivateMessages() {
+		return privateMessages;
 	}
 
-	public void setPrivateMessageConfiguration(ChannelProperties privateMessageConfiguration) {
-		this.privateMessageConfiguration = privateMessageConfiguration;
+	public void setPrivateMessages(PrivateMessageProperties privateMessages) {
+		this.privateMessages = privateMessages;
 	}
 
 	public Map<Identifier, PlaceholderProperties> getPlaceholders() {
