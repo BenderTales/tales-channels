@@ -8,6 +8,7 @@ import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
 import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
+import com.bendertales.mc.chatapi.impl.vo.Settings;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,12 +20,14 @@ public class ChatManager implements MessageSender {
 
 	private static final ChatManager instance = new ChatManager();
 
+
 	public static ChatManager get() {
 		// Not a big fan of using singleton but necessary for the mixin
 		return instance;
 	}
 
 	private final Map<UUID, PlayerSettings>  playersSettingsById    = new HashMap<>();
+	private Settings settings;
 	private Map<Identifier, Channel>         channelsById;
 
 	private final ConfigurationManager configurationManager = new ConfigurationManager();
@@ -37,7 +40,7 @@ public class ChatManager implements MessageSender {
 
 	public void load() {
 		//TODO load player settings
-		var settings = configurationManager.buildConfiguredChannels();
+		this.settings = configurationManager.buildConfiguredChannels();
 		this.channelsById = settings.channels();
 	}
 
@@ -83,12 +86,12 @@ public class ChatManager implements MessageSender {
 
 	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
 		if (!channel.senderFilter().test(sender)) {
-			throw new ChatException("§4You cannot send a message in this channel.");
+			throw new ChatException("You cannot send a message in this channel.");
 		}
 
 		var senderSettings = getOrCreatePlayerSettings(sender);
 		if (senderSettings.isMutedInChannel(channel)) {
-			throw new ChatException("§4You are muted in this channel.");
+			throw new ChatException("You are muted in this channel.");
 		}
 	}
 
@@ -109,6 +112,10 @@ public class ChatManager implements MessageSender {
 		var playerSettings = getOrCreatePlayerSettings(player);
 		playerSettings.setCurrentChannel(targetChannel);
 		//TODO: save in file
+	}
+
+	public int getLocalChannelDistance() {
+		return settings.localChannelDistance();
 	}
 
 	private List<ServerPlayerEntity> getPlayers() {

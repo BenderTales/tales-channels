@@ -92,6 +92,7 @@ public class ConfigurationManager {
 
 	private ModConfiguration defaultConfiguration() {
 		var modConfiguration = new ModConfiguration();
+		modConfiguration.setLocalChannelDistance(40);
 		modConfiguration.setDefaultChannel(ChatConstants.Ids.Channels.GLOBAL);
 		modConfiguration.setChannels(new Object2ObjectOpenHashMap<>());
 		modConfiguration.setPlaceholders(new Object2ObjectOpenHashMap<>());
@@ -112,6 +113,12 @@ public class ConfigurationManager {
 
 	private void updateFileIfNecessary(ModConfiguration modConfiguration) {
 		boolean changedConfiguration = false;
+
+		if (modConfiguration.getLocalChannelDistance() < 4) {
+			modConfiguration.setLocalChannelDistance(4);
+			changedConfiguration = true;
+		}
+
 		var configPlaceholders = modConfiguration.getPlaceholders();
 		for (PlaceholderHandler placeholderHandler : Registry.FORMAT_HANDLERS) {
 			var placeholderId = placeholderHandler.getId();

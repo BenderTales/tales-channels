@@ -13,7 +13,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -58,7 +60,7 @@ public class CmdChat implements ModCommand {
 			return SINGLE_SUCCESS;
 		}
 		catch (ChatException e) {
-			var text = Text.of(e.getMessage());
+			var text = new LiteralText(e.getMessage()).formatted(Formatting.RED);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(text), text);
 		}
 	}

@@ -9,7 +9,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -34,7 +36,7 @@ public abstract class ShortcutModCommand implements ModCommand {
 			messageSender.sendMessage(player, message, getChannelId());
 		}
 		catch (ChatException e) {
-			var msg = Text.of(e.getMessage());
+			var msg = new LiteralText(e.getMessage()).formatted(Formatting.RED);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(msg), msg);
 		}
 		return SINGLE_SUCCESS;

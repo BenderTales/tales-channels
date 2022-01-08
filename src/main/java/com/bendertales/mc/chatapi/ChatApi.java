@@ -8,7 +8,6 @@ import com.bendertales.mc.chatapi.impl.formats.DateTimePlaceholderHandler;
 import com.bendertales.mc.chatapi.impl.formats.MessagePlaceholderHandler;
 import com.bendertales.mc.chatapi.impl.formats.PlayerNamePlaceholderHandler;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +32,7 @@ public class ChatApi implements ModInitializer {
 			Registry.FORMAT_HANDLERS.register(new PlayerNamePlaceholderHandler());
 			Registry.FORMAT_HANDLERS.register(new DateTimePlaceholderHandler());
 
-			Registry.CHANNEL_HANDLERS.register(new LocalChannel());
+			Registry.CHANNEL_HANDLERS.register(new LocalChannel(chatManager));
 			Registry.CHANNEL_HANDLERS.register(new GlobalChannel());
 			Registry.CHANNEL_HANDLERS.register(new SupportChannel());
 			Registry.CHANNEL_HANDLERS.register(new StaffChannel());
