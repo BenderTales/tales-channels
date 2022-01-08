@@ -43,5 +43,6 @@ jobs:
     - name: Publish to GitHub Packages
       run: ./gradlew publish
       env:
+        TALES_PROJECT_VERSION: ${{ github.event.release.tag_name }}
         USERNAME: ${{ env.GITHUB_ACTOR }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
