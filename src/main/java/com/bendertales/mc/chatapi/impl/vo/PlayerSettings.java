@@ -14,8 +14,9 @@ public class PlayerSettings {
 	private final UUID                  playerUuid;
 	private final ObjectSet<Identifier> hiddenChannels = new ObjectOpenHashSet<>();
 	private final ObjectSet<Identifier> mutedChannels = new ObjectOpenHashSet<>();
-	private       Channel               currentChannel;
-	private boolean enabledSocialSpy = false;
+	private       Identifier            currentChannel;
+	private       boolean enabledSocialSpy = false;
+	private       UUID lastMessageSender = null;
 
 	public PlayerSettings(UUID playerUuid) {
 		this.playerUuid = playerUuid;
@@ -25,15 +26,23 @@ public class PlayerSettings {
 		return playerUuid;
 	}
 
+	public UUID getLastMessageSender() {
+		return lastMessageSender;
+	}
+
+	public void setLastMessageSender(UUID lastMessageSender) {
+		this.lastMessageSender = lastMessageSender;
+	}
+
 	public Set<Identifier> getHiddenChannels() {
 		return hiddenChannels;
 	}
 
-	public Channel getCurrentChannel() {
+	public Identifier getCurrentChannel() {
 		return currentChannel;
 	}
 
-	public void setCurrentChannel(Channel currentChannel) {
+	public void setCurrentChannel(Identifier currentChannel) {
 		this.currentChannel = currentChannel;
 	}
 
@@ -57,8 +66,16 @@ public class PlayerSettings {
 		channels.stream().map(Channel::id).forEach(mutedChannels::add);
 	}
 
+	public void muteChannelsById(Collection<Identifier> channels) {
+		mutedChannels.addAll(channels);
+	}
+
 	public boolean isMutedInChannel(Channel channel) {
 		return mutedChannels.contains(channel.id());
+	}
+
+	public Set<Identifier> getMutedChannels() {
+		return mutedChannels;
 	}
 
 	public void unmuteChannels(Collection<Channel> channels) {
@@ -72,4 +89,6 @@ public class PlayerSettings {
 	public void setEnabledSocialSpy(boolean enabledSocialSpy) {
 		this.enabledSocialSpy = enabledSocialSpy;
 	}
+
+
 }

@@ -7,7 +7,6 @@ import com.bendertales.mc.chatapi.api.*;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
-import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
 import com.bendertales.mc.chatapi.impl.vo.Settings;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
@@ -20,28 +19,36 @@ public class ChatManager implements MessageSender {
 
 	private static final ChatManager instance = new ChatManager();
 
-
 	public static ChatManager get() {
 		// Not a big fan of using singleton but necessary for the mixin
 		return instance;
 	}
 
-	private final Map<UUID, PlayerSettings>  playersSettingsById    = new HashMap<>();
+	private final ModConfigurationManager configurationManager = new ModConfigurationManager();
+	private final PlayerConfigurationManager playerConfigurationManager = new PlayerConfigurationManager();
+
 	private Settings settings;
 	private Map<Identifier, Channel>         channelsById;
-
-	private final ConfigurationManager configurationManager = new ConfigurationManager();
-
 	private MinecraftServer minecraftServer;
 
 	public void reload() {
+		playerConfigurationManager.clearSettings();
 		load();
 	}
 
 	public void load() {
-		//TODO load player settings
 		this.settings = configurationManager.buildConfiguredChannels();
 		this.channelsById = settings.channels();
+
+		var channel = channelsById.get(settings.defaultChannel());
+		if (channel == null) {
+			channel = channelsById.get(ChatConstants.Ids.Channels.GLOBAL);
+			if (channel == null) {
+				channel = channelsById.values().stream().findFirst().orElse(null);
+			}
+		}
+
+		this.playerConfigurationManager.setDefaultChannel(channel == null ? null : channel.id());
 	}
 
 	public void setMinecraftServer(MinecraftServer minecraftServer) {
@@ -89,16 +96,20 @@ public class ChatManager implements MessageSender {
 			throw new ChatException("You cannot send a message in this channel.");
 		}
 
-		var senderSettings = getOrCreatePlayerSettings(sender);
-		if (senderSettings.isMutedInChannel(channel)) {
+		if (playerConfigurationManager.isPlayerMutedInChannels(sender, channel)) {
 			throw new ChatException("You are muted in this channel.");
 		}
 	}
 
 	private boolean hasEnabledSocialSpy(ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		if (playerSettings.isEnabledSocialSpy()) {
-			return Perms.isOp(player) || Perms.hasAny(player, List.of("chatapi.commands.admin", "chatapi.commands.socialspy"));
+		if (playerConfigurationManager.hasPlayerEnabledSocialSpy(player)) {
+			var hasSocialSpyPermission = Perms.isOp(player)
+                               || Perms.hasAny(player, List.of("chatapi.commands.admin", "chatapi.commands.socialspy"));
+			if (!hasSocialSpyPermission) {
+				playerConfigurationManager.disableSocialSpy(player);
+				return false;
+			}
+			return true;
 		}
 		return false;
 	}
@@ -109,9 +120,7 @@ public class ChatManager implements MessageSender {
 			throw new ChatException("Channel not found");
 		}
 
-		var playerSettings = getOrCreatePlayerSettings(player);
-		playerSettings.setCurrentChannel(targetChannel);
-		//TODO: save in file
+		playerConfigurationManager.changeActiveChannel(player, targetChannel);
 	}
 
 	public int getLocalChannelDistance() {
@@ -123,11 +132,11 @@ public class ChatManager implements MessageSender {
 	}
 
 	public List<PlayerChannelStatus> getPlayerChannelsStatus(ServerPlayerEntity sender) {
-		var playerSettings = getOrCreatePlayerSettings(sender);
+		var playerSettings = playerConfigurationManager.getOrCreatePlayerSettings(sender);
 		return channelsById.values().stream()
 			.filter(ch -> ch.senderFilter().test(sender))
 			.map(ch -> {
-				var isCurrent = playerSettings.getCurrentChannel() == ch;
+				var isCurrent = Objects.equals(ch.id(), playerSettings.getCurrentChannel());
 				var isHidden = playerSettings.getHiddenChannels().contains(ch.id());
 				return new PlayerChannelStatus(ch, isCurrent, isHidden);
 			}).toList();
@@ -154,13 +163,16 @@ public class ChatManager implements MessageSender {
 	}
 
 	private Channel getPlayerCurrentChannel(ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		return playerSettings.getCurrentChannel();
+		var playerSettings = playerConfigurationManager.getOrCreatePlayerSettings(player);
+		var channel = channelsById.get(playerSettings.getCurrentChannel());
+		if (channel == null) {
+			channel =  channelsById.get(ChatConstants.Ids.Channels.GLOBAL);
+		}
+		return channel;
 	}
 
 	public boolean isChannelHiddenForPlayer(Channel channel, ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		return playerSettings.isChannelHidden(channel);
+		return playerConfigurationManager.isChannelHiddenForPlayer(channel, player);
 	}
 
 	public boolean isChannelVisibleForPlayer(Channel channel, ServerPlayerEntity player) {
@@ -168,40 +180,25 @@ public class ChatManager implements MessageSender {
 	}
 
 	public boolean toggleHiddenChannelForPlayer(Channel channel, ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		return playerSettings.toggleHiddenChannel(channel);
+		return playerConfigurationManager.toggleHiddenChannelForPlayer(channel, player);
 	}
-
-	private PlayerSettings getOrCreatePlayerSettings(ServerPlayerEntity player) {
-		return playersSettingsById.computeIfAbsent(player.getUuid(), id -> {
-			var settings = new PlayerSettings(id);
-			settings.setCurrentChannel(channelsById.get(ChatConstants.Ids.Channels.GLOBAL));
-			return settings;
-		});
-	}
-
-
 
 	private ChatManager() {
 	}
 
 	public void mutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channelsToMute) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		playerSettings.muteChannels(channelsToMute);
+		playerConfigurationManager.mutePlayerInChannels(player, channelsToMute);
 	}
 
 	public void unmutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channels) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		playerSettings.unmuteChannels(channels);
+		playerConfigurationManager.unmutePlayerInChannels(player, channels);
 	}
 
 	public void enableSocialSpy(ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		playerSettings.setEnabledSocialSpy(true);
+		playerConfigurationManager.enableSocialSpy(player);
 	}
 
 	public void disableSocialSpy(ServerPlayerEntity player) {
-		var playerSettings = getOrCreatePlayerSettings(player);
-		playerSettings.setEnabledSocialSpy(false);
+		playerConfigurationManager.disableSocialSpy(player);
 	}
 }

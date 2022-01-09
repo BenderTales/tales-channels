@@ -1,11 +1,15 @@
 package com.bendertales.mc.chatapi.config;
 
+import java.util.List;
+import java.util.Set;
+
 import net.minecraft.util.Identifier;
 
 
 public class PlayerConfiguration {
 
 	private Identifier activeChannel;
+	private Set<Identifier> mutedChannels;
 
 	public Identifier getActiveChannel() {
 		return activeChannel;
@@ -15,4 +19,11 @@ public class PlayerConfiguration {
 		this.activeChannel = activeChannel;
 	}
 
+	public Set<Identifier> getMutedChannels() {
+		return mutedChannels;
+	}
+
+	public void setMutedChannels(Set<Identifier> mutedChannels) {
+		this.mutedChannels = mutedChannels;
+	}
 }

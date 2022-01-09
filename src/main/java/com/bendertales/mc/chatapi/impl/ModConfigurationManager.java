@@ -27,11 +27,11 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 
-public class ConfigurationManager {
+public class ModConfigurationManager {
 
 	private final Path configFile;
 
-	public ConfigurationManager() {
+	public ModConfigurationManager() {
 		configFile = FabricLoader.getInstance().getConfigDir()
 		                         .resolve(ChatConstants.MODID).resolve("config.json");
 	}
