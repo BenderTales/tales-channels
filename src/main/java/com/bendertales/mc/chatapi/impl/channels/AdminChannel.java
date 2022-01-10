@@ -18,7 +18,7 @@ public class AdminChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[ADMIN]%PLAYER_NAME%> %MESSAGE%";
+		return "[ADMIN]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

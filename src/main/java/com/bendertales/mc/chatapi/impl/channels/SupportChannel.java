@@ -25,7 +25,7 @@ public class SupportChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[SUPPORT]%PLAYER_NAME%> %MESSAGE%";
+		return "[SUPPORT]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

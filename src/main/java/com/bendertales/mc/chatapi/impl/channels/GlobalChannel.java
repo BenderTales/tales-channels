@@ -21,7 +21,7 @@ public class GlobalChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[!]%PLAYER_NAME%> %MESSAGE%";
+		return "[!]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

@@ -15,7 +15,9 @@ import com.bendertales.mc.chatapi.api.Registry;
 import com.bendertales.mc.chatapi.config.ChannelProperties;
 import com.bendertales.mc.chatapi.config.ModConfiguration;
 import com.bendertales.mc.chatapi.config.PlaceholderProperties;
+import com.bendertales.mc.chatapi.config.PrivateMessageProperties;
 import com.bendertales.mc.chatapi.config.serialization.IdentifierSerializer;
+import com.bendertales.mc.chatapi.impl.messages.MessageFormatter;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
 import com.bendertales.mc.chatapi.impl.vo.Settings;
@@ -53,10 +55,10 @@ public class ModConfigurationManager {
 				var format = c.format();
 
 				var channelPlaceholders = extractNecessaryPlaceholders(placeholdersById, format);
+				var messageFormatter = new MessageFormatter(format, channelPlaceholders);
 
-				return new Channel(channelDefault.getId(), channelDefault.getPrefixSelector(),
-				                          format, channelPlaceholders,
-				                          channelDefault.getRecipientsFilter(), channelDefault.getSenderFilter());
+				return new Channel(channelDefault.getId(), channelDefault.getPrefixSelector(), messageFormatter,
+		                           channelDefault.getRecipientsFilter(), channelDefault.getSenderFilter());
 			})
             .forEach(ch -> channels.put(ch.id(), ch));
 
@@ -92,8 +94,14 @@ public class ModConfigurationManager {
 	}
 
 	private ModConfiguration defaultConfiguration() {
+		var privateMessageProperties = new PrivateMessageProperties();
+		privateMessageProperties.setConsoleFormat("[PM] %SENDER% -> %RECIPIENT%: %MESSAGE%");
+		privateMessageProperties.setSenderIsYouFormat("You -> %RECIPIENT%: %MESSAGE%");
+		privateMessageProperties.setSenderIsOtherFormat("%SENDER% -> You: %MESSAGE%");
+
 		var modConfiguration = new ModConfiguration();
 		modConfiguration.setLocalChannelDistance(40);
+		modConfiguration.setPrivateMessages(privateMessageProperties);
 		modConfiguration.setDefaultChannel(ChatConstants.Ids.Channels.GLOBAL);
 		modConfiguration.setChannels(new Object2ObjectOpenHashMap<>());
 		modConfiguration.setPlaceholders(new Object2ObjectOpenHashMap<>());
@@ -107,7 +115,8 @@ public class ModConfigurationManager {
             .stream()
             .map(e -> {
 	            var ph = Registry.FORMAT_HANDLERS.get(e.getKey());
-	            return new Placeholder(ph.getId(), e.getValue().getApplicationOrder(), ph.getMessageFormatter());
+	            return new Placeholder(ph.getId(), e.getValue().getApplicationOrder(),
+	                                   ph.getPlaceholderFormatter(), ph.getSpecificToRecipientPlaceholderFormatter());
             })
             .collect(Collectors.toMap(Placeholder::id, p -> p));
 	}

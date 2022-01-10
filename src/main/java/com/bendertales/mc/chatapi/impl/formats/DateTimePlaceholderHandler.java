@@ -4,9 +4,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.MessageFormatter;
+import com.bendertales.mc.chatapi.api.PlaceholderFormatter;
 import com.bendertales.mc.chatapi.api.PlaceholderHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
@@ -33,8 +32,8 @@ public class DateTimePlaceholderHandler implements PlaceholderHandler {
 	}
 
 	@Override
-	public MessageFormatter getMessageFormatter() {
-		return (String format, ServerPlayerEntity player, String message) -> {
+	public PlaceholderFormatter getPlaceholderFormatter() {
+		return (format, message) -> {
 			var now = LocalTime.now();
 			return format.replace(HOUR_PLACEHOLDER, now.format(hoursFormatter))
 			             .replace(MINUTES_PLACEHOLDER, now.format(minutesFormatter))

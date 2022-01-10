@@ -25,7 +25,7 @@ public class LocalChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[L]%PLAYER_NAME%> %MESSAGE%";
+		return "[L]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

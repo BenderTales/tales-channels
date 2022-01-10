@@ -11,7 +11,6 @@ import com.bendertales.mc.chatapi.impl.vo.Settings;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 
@@ -76,19 +75,20 @@ public class ChatManager implements MessageSender {
 		sendMessage(sender, message, channel);
 	}
 
-	private void sendMessage(ServerPlayerEntity sender, String message, Channel channel) throws ChatException {
+	private void sendMessage(ServerPlayerEntity sender, String messageContent, Channel channel) throws ChatException {
 		ensureSenderIsAllowedInChannel(sender, channel);
 
-		String formattedMessage = channel.formatMessage(sender, message);
-		var messageToSend = Text.of(formattedMessage);
-		minecraftServer.sendSystemMessage(messageToSend, sender.getUuid());
+		var message = new Message(sender, messageContent);
+		var formattedMessage = channel.messageFormatter().prepare(message);
+		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(null), sender.getUuid());
 		getPlayers().stream()
             .filter(p -> isChannelVisibleForPlayer(channel, p))
 	        .filter(r -> {
 		        var options = new RecipientFilterOptions(hasEnabledSocialSpy(r));
 		        return channel.recipientsFilter().filterRecipient(sender, r, options);
 	        })
-			.forEach(recipient -> recipient.sendMessage(messageToSend, MessageType.CHAT, sender.getUuid()));
+			.forEach(recipient -> recipient.sendMessage(formattedMessage.forRecipient(recipient),
+			                                            MessageType.CHAT, sender.getUuid()));
 	}
 
 	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
@@ -201,4 +201,25 @@ public class ChatManager implements MessageSender {
 	public void disableSocialSpy(ServerPlayerEntity player) {
 		playerConfigurationManager.disableSocialSpy(player);
 	}
+
+	public void respondToPrivateMessage(ServerPlayerEntity sender, String message) throws ChatException {
+		var senderSettings = playerConfigurationManager.getOrCreatePlayerSettings(sender);
+		var lastSenderUuid = senderSettings.getLastMessageSender();
+		if (lastSenderUuid == null) {
+			throw new ChatException("Nobody sent you a message recently");
+		}
+
+		var lastSender = minecraftServer.getPlayerManager().getPlayer(lastSenderUuid);
+
+		sendPrivateMessage(sender, lastSender, message);
+	}
+
+	public void sendPrivateMessage(ServerPlayerEntity sender, ServerPlayerEntity recipient, String message)
+	throws ChatException {
+		if (recipient == null || recipient.isDisconnected()) {
+			throw new ChatException("This player is not connected");
+		}
+	}
+
+
 }

@@ -18,7 +18,7 @@ public class StaffChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[STAFF]%PLAYER_NAME%> %MESSAGE%";
+		return "[STAFF]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

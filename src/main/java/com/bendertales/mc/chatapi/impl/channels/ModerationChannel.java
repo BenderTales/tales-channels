@@ -18,7 +18,7 @@ public class ModerationChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[MOD]%PLAYER_NAME%> %MESSAGE%";
+		return "[MOD]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

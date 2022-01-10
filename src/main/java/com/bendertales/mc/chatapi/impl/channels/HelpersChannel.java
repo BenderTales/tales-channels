@@ -18,7 +18,7 @@ public class HelpersChannel implements ChannelDefault {
 
 	@Override
 	public String getDefaultFormat() {
-		return "[Help]%PLAYER_NAME%> %MESSAGE%";
+		return "[Help]%SENDER%> %MESSAGE%";
 	}
 
 	@Override

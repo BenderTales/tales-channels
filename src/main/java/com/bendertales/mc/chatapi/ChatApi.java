@@ -6,7 +6,8 @@ import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.channels.*;
 import com.bendertales.mc.chatapi.impl.formats.DateTimePlaceholderHandler;
 import com.bendertales.mc.chatapi.impl.formats.MessagePlaceholderHandler;
-import com.bendertales.mc.chatapi.impl.formats.PlayerNamePlaceholderHandler;
+import com.bendertales.mc.chatapi.impl.formats.RecipientPlaceholderHandler;
+import com.bendertales.mc.chatapi.impl.formats.SenderPlaceholderHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,8 @@ public class ChatApi implements ModInitializer {
 			chatManager.setMinecraftServer(server);
 
 			Registry.FORMAT_HANDLERS.register(new MessagePlaceholderHandler());
-			Registry.FORMAT_HANDLERS.register(new PlayerNamePlaceholderHandler());
+			Registry.FORMAT_HANDLERS.register(new SenderPlaceholderHandler());
+			Registry.FORMAT_HANDLERS.register(new RecipientPlaceholderHandler());
 			Registry.FORMAT_HANDLERS.register(new DateTimePlaceholderHandler());
 
 			Registry.CHANNEL_HANDLERS.register(new LocalChannel(chatManager));

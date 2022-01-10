@@ -32,7 +32,8 @@ public class CommandRegistries {
 			new CmdChatAdmin(chatManager),
 			new CmdChatHelpers(chatManager),
 			new CmdChatStaff(chatManager),
-			new CmdChatModeration(chatManager)
+			new CmdChatModeration(chatManager),
+			new CmdPrivateMessage(chatManager)
 		);
 	}
 
