@@ -1,6 +1,6 @@
 package com.bendertales.mc.chatapi;
 
-import com.bendertales.mc.chatapi.api.Registry;
+import com.bendertales.mc.chatapi.impl.Registry;
 import com.bendertales.mc.chatapi.command.CommandRegistries;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.bendertales.mc.chatapi.impl.channels.*;

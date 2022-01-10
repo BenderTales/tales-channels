@@ -19,8 +19,9 @@ public class CommandRegistries {
 		buildCommands(chatManager).forEach(commandRegistry::register);
 	}
 
-	private static Stream<ModCommand> buildCommands(ChatManager chatManager) {
+	private static Stream<CommandRegistrationCallback> buildCommands(ChatManager chatManager) {
 		return Stream.of(
+			new ClearingNativeCommands(),
 			new CmdReload(chatManager),
 			new CmdList(chatManager),
 			new CmdSocialSpy(chatManager),

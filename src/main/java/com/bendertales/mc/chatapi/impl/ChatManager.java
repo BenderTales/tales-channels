@@ -5,9 +5,8 @@ import java.util.*;
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.*;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
-import com.bendertales.mc.chatapi.impl.vo.Channel;
-import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
-import com.bendertales.mc.chatapi.impl.vo.Settings;
+import com.bendertales.mc.chatapi.impl.messages.FormattedMessage;
+import com.bendertales.mc.chatapi.impl.vo.*;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -202,7 +201,7 @@ public class ChatManager implements MessageSender {
 		playerConfigurationManager.disableSocialSpy(player);
 	}
 
-	public void respondToPrivateMessage(ServerPlayerEntity sender, String message) throws ChatException {
+	public void respondToPrivateMessage(ServerPlayerEntity sender, String messageContent) throws ChatException {
 		var senderSettings = playerConfigurationManager.getOrCreatePlayerSettings(sender);
 		var lastSenderUuid = senderSettings.getLastMessageSender();
 		if (lastSenderUuid == null) {
@@ -211,14 +210,28 @@ public class ChatManager implements MessageSender {
 
 		var lastSender = minecraftServer.getPlayerManager().getPlayer(lastSenderUuid);
 
-		sendPrivateMessage(sender, lastSender, message);
+		sendPrivateMessage(sender, lastSender, messageContent);
 	}
 
-	public void sendPrivateMessage(ServerPlayerEntity sender, ServerPlayerEntity recipient, String message)
+	public void sendPrivateMessage(ServerPlayerEntity sender, ServerPlayerEntity recipient, String messageContent)
 	throws ChatException {
 		if (recipient == null || recipient.isDisconnected()) {
 			throw new ChatException("This player is not connected");
 		}
+
+		var message = new Message(sender, messageContent);
+		var pmFormats = settings.privateMessageFormatters();
+		var formattedMessage = pmFormats.consoleFormatter().prepare(message);
+		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(recipient), sender.getUuid());
+
+		formattedMessage = pmFormats.senderIsYouFormatter().prepare(message);
+		sender.sendMessage(formattedMessage.forRecipient(recipient), false);
+
+		formattedMessage = pmFormats.senderIsOtherFormatter().prepare(message);
+		recipient.sendMessage(formattedMessage.forRecipient(recipient), false);
+
+		var recipientSettings = playerConfigurationManager.getOrCreatePlayerSettings(recipient);
+		recipientSettings.setLastMessageSender(sender.getUuid());
 	}
 
 

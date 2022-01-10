@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.PlaceholderHandler;
-import com.bendertales.mc.chatapi.api.Registry;
 import com.bendertales.mc.chatapi.config.ChannelProperties;
 import com.bendertales.mc.chatapi.config.ModConfiguration;
 import com.bendertales.mc.chatapi.config.PlaceholderProperties;
@@ -20,6 +19,7 @@ import com.bendertales.mc.chatapi.config.serialization.IdentifierSerializer;
 import com.bendertales.mc.chatapi.impl.messages.MessageFormatter;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.Placeholder;
+import com.bendertales.mc.chatapi.impl.vo.PrivateMessageFormatters;
 import com.bendertales.mc.chatapi.impl.vo.Settings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,24 +45,50 @@ public class ModConfigurationManager {
 
 		var placeholdersById = extractSortedPlaceholders(modConfiguration);
 
+		var channels = prepareChannels(modConfiguration, placeholdersById);
+
+		var privateMessageFormatters = createPrivateMessageFormatters(modConfiguration, placeholdersById);
+
+		return new Settings(modConfiguration.getDefaultChannel(), modConfiguration.getLocalChannelDistance(), privateMessageFormatters, channels);
+	}
+
+	@NotNull
+	private PrivateMessageFormatters createPrivateMessageFormatters(ModConfiguration modConfiguration,
+	                                                             Map<Identifier, Placeholder> placeholdersById) {
+		var pmProps = modConfiguration.getPrivateMessages();
+		return new PrivateMessageFormatters(
+			createMessageFormatter(pmProps.getConsoleFormat(), placeholdersById),
+			createMessageFormatter(pmProps.getSenderIsYouFormat(), placeholdersById),
+			createMessageFormatter(pmProps.getSenderIsOtherFormat(), placeholdersById)
+		);
+	}
+
+	@NotNull
+	private Object2ObjectOpenHashMap<Identifier, Channel> prepareChannels(
+			ModConfiguration modConfiguration, Map<Identifier, Placeholder> placeholdersById) {
 		var channels = new Object2ObjectOpenHashMap<Identifier, Channel>();
 
 		modConfiguration.getChannels().entrySet().stream()
-            .map(e -> new ChannelStruct(e.getKey(), e.getValue().isDisabled(), e.getValue().getFormat()))
-			.filter(c -> !c.disabled())
-			.map(c -> {
+	        .map(e -> new ChannelStruct(e.getKey(), e.getValue().isDisabled(), e.getValue().getFormat()))
+	        .filter(c -> !c.disabled())
+	        .map(c -> {
 				var channelDefault = Registry.CHANNEL_HANDLERS.get(c.id());
 				var format = c.format();
 
-				var channelPlaceholders = extractNecessaryPlaceholders(placeholdersById, format);
-				var messageFormatter = new MessageFormatter(format, channelPlaceholders);
+				var messageFormatter = createMessageFormatter(format, placeholdersById);
 
 				return new Channel(channelDefault.getId(), channelDefault.getPrefixSelector(), messageFormatter,
 		                           channelDefault.getRecipientsFilter(), channelDefault.getSenderFilter());
 			})
             .forEach(ch -> channels.put(ch.id(), ch));
 
-		return new Settings(modConfiguration.getDefaultChannel(), modConfiguration.getLocalChannelDistance(), channels);
+		channels.trim();
+		return channels;
+	}
+
+	@NotNull
+	private MessageFormatter createMessageFormatter(String format, Map<Identifier, Placeholder> placeholdersById) {
+		return new MessageFormatter(format, extractNecessaryPlaceholders(placeholdersById, format));
 	}
 
 	private List<Placeholder> extractNecessaryPlaceholders(Map<Identifier, Placeholder> placeholdersById, String format) {
