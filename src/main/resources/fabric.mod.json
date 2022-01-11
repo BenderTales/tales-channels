@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "chat-api",
+  "id": "tales-chat-api",
   "version": "${version}",
   "name": "Chat Api",
   "description": "",

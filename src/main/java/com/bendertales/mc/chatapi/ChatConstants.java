@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 
 public final class ChatConstants {
 
-	public static final String MODID = "chat-api";
+	public static final String MODID = "tales-chat-api";
 
 	public static final class Ids {
 
