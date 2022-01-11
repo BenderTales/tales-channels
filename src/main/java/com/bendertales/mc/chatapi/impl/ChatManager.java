@@ -1,6 +1,7 @@
 package com.bendertales.mc.chatapi.impl;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.*;
@@ -10,11 +11,13 @@ import com.bendertales.mc.chatapi.impl.vo.*;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 
 public class ChatManager implements MessageSender {
 
+	private static final Pattern FORMATTING_REGEX = Pattern.compile("§[a-zA-Z0-9]");
 	private static final ChatManager instance = new ChatManager();
 
 	public static ChatManager get() {
@@ -79,7 +82,7 @@ public class ChatManager implements MessageSender {
 
 		var message = new Message(sender, messageContent);
 		var formattedMessage = channel.messageFormatter().prepare(message);
-		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(null), sender.getUuid());
+		logToServer(sender, formattedMessage);
 		getPlayers().stream()
             .filter(p -> isChannelVisibleForPlayer(channel, p))
 	        .filter(r -> {
@@ -88,6 +91,45 @@ public class ChatManager implements MessageSender {
 	        })
 			.forEach(recipient -> recipient.sendMessage(formattedMessage.forRecipient(recipient),
 			                                            MessageType.CHAT, sender.getUuid()));
+	}
+
+	private void logToServer(ServerPlayerEntity sender, FormattedMessage formattedMessage) {
+		var text = formattedMessage.forRecipient(null);
+		var consoleAdaptedMessage = FORMATTING_REGEX.matcher(text.asString()).replaceAll("");
+		minecraftServer.sendSystemMessage(Text.of(consoleAdaptedMessage), sender.getUuid());
+	}
+
+	public void respondToPrivateMessage(ServerPlayerEntity sender, String messageContent) throws ChatException {
+		var senderSettings = playerConfigurationManager.getOrCreatePlayerSettings(sender);
+		var lastSenderUuid = senderSettings.getLastMessageSender();
+		if (lastSenderUuid == null) {
+			throw new ChatException("Nobody sent you a message recently");
+		}
+
+		var lastSender = minecraftServer.getPlayerManager().getPlayer(lastSenderUuid);
+
+		sendPrivateMessage(sender, lastSender, messageContent);
+	}
+
+	public void sendPrivateMessage(ServerPlayerEntity sender, ServerPlayerEntity recipient, String messageContent)
+	throws ChatException {
+		if (recipient == null || recipient.isDisconnected()) {
+			throw new ChatException("This player is not connected");
+		}
+
+		var message = new Message(sender, messageContent);
+		var pmFormats = settings.privateMessageFormatters();
+		var formattedMessage = pmFormats.consoleFormatter().prepare(message);
+		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(recipient), sender.getUuid());
+
+		formattedMessage = pmFormats.senderIsYouFormatter().prepare(message);
+		sender.sendMessage(formattedMessage.forRecipient(recipient), false);
+
+		formattedMessage = pmFormats.senderIsOtherFormatter().prepare(message);
+		recipient.sendMessage(formattedMessage.forRecipient(recipient), false);
+
+		var recipientSettings = playerConfigurationManager.getOrCreatePlayerSettings(recipient);
+		recipientSettings.setLastMessageSender(sender.getUuid());
 	}
 
 	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
@@ -200,39 +242,4 @@ public class ChatManager implements MessageSender {
 	public void disableSocialSpy(ServerPlayerEntity player) {
 		playerConfigurationManager.disableSocialSpy(player);
 	}
-
-	public void respondToPrivateMessage(ServerPlayerEntity sender, String messageContent) throws ChatException {
-		var senderSettings = playerConfigurationManager.getOrCreatePlayerSettings(sender);
-		var lastSenderUuid = senderSettings.getLastMessageSender();
-		if (lastSenderUuid == null) {
-			throw new ChatException("Nobody sent you a message recently");
-		}
-
-		var lastSender = minecraftServer.getPlayerManager().getPlayer(lastSenderUuid);
-
-		sendPrivateMessage(sender, lastSender, messageContent);
-	}
-
-	public void sendPrivateMessage(ServerPlayerEntity sender, ServerPlayerEntity recipient, String messageContent)
-	throws ChatException {
-		if (recipient == null || recipient.isDisconnected()) {
-			throw new ChatException("This player is not connected");
-		}
-
-		var message = new Message(sender, messageContent);
-		var pmFormats = settings.privateMessageFormatters();
-		var formattedMessage = pmFormats.consoleFormatter().prepare(message);
-		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(recipient), sender.getUuid());
-
-		formattedMessage = pmFormats.senderIsYouFormatter().prepare(message);
-		sender.sendMessage(formattedMessage.forRecipient(recipient), false);
-
-		formattedMessage = pmFormats.senderIsOtherFormatter().prepare(message);
-		recipient.sendMessage(formattedMessage.forRecipient(recipient), false);
-
-		var recipientSettings = playerConfigurationManager.getOrCreatePlayerSettings(recipient);
-		recipientSettings.setLastMessageSender(sender.getUuid());
-	}
-
-
 }
