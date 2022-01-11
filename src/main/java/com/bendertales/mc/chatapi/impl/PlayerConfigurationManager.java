@@ -26,9 +26,9 @@ public class PlayerConfigurationManager {
 	private Identifier defaultChannel;
 
 	public PlayerConfigurationManager() {
-		var modContainer = FabricLoader.getInstance().getModContainer(ChatConstants.MODID).orElseThrow();
-		configFolder = modContainer.getRootPath().resolve("players");
-
+		var modContainer = FabricLoader.getInstance().getGameDir()
+		                               .resolve("mods").resolve(ChatConstants.MODID);
+		configFolder = modContainer.resolve("players");
 	}
 
 	public PlayerSettings getOrCreatePlayerSettings(ServerPlayerEntity player) {
@@ -138,6 +138,9 @@ public class PlayerConfigurationManager {
 	}
 
 	public void savePlayerConfiguration(PlayerSettings playerSettings) throws IOException {
+		if (!Files.exists(configFolder)) {
+			Files.createDirectories(configFolder);
+		}
 		var playerFile = configFolder.resolve(playerSettings.getPlayerUuid().toString() + ".json");
 
 		var playerConfiguration = new PlayerConfiguration();
