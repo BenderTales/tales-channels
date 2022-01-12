@@ -10,11 +10,11 @@ public class ChatAPI {
 		return ChatManager.get();
 	}
 
-	public void registerChannel(ChannelDefault channel) {
+	public static void registerChannel(ChannelDefault channel) {
 		Registry.CHANNEL_HANDLERS.register(channel);
 	}
 
-	public void registerPlaceholder(PlaceholderHandler placeholderHandler) {
+	public static void registerPlaceholder(PlaceholderHandler placeholderHandler) {
 		Registry.FORMAT_HANDLERS.register(placeholderHandler);
 	}
 }
