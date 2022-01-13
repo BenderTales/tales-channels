@@ -6,5 +6,5 @@ import net.minecraft.server.network.ServerPlayerEntity;
 @FunctionalInterface
 public interface RecipientFilter {
 
-	boolean filterRecipient(ServerPlayerEntity sender, ServerPlayerEntity recipient, RecipientFilterOptions options);
+	MessageVisibility filterRecipient(ServerPlayerEntity sender, ServerPlayerEntity recipient, RecipientFilterOptions options);
 }

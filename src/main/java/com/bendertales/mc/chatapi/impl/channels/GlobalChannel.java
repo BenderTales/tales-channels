@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
+import com.bendertales.mc.chatapi.api.MessageVisibility;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -38,7 +39,7 @@ public class GlobalChannel implements ChannelDefault {
             || Perms.isOp(recipient)
             || Perms.hasAny(recipient, singleton(PERMISSION));*/
 
-		return (sender, recipient, options) -> true;
+		return (sender, recipient, options) -> MessageVisibility.SHOW;
 	}
 
 	@Override

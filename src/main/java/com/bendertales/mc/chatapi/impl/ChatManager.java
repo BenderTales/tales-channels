@@ -7,7 +7,10 @@ import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.*;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.bendertales.mc.chatapi.impl.messages.FormattedMessage;
-import com.bendertales.mc.chatapi.impl.vo.*;
+import com.bendertales.mc.chatapi.impl.vo.Channel;
+import com.bendertales.mc.chatapi.impl.vo.MessageOptions;
+import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
+import com.bendertales.mc.chatapi.impl.vo.Settings;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -85,16 +88,18 @@ public class ChatManager implements MessageSender {
 		logToServer(sender, formattedMessage);
 		getPlayers().stream()
             .filter(p -> isChannelVisibleForPlayer(channel, p))
-	        .filter(r -> {
-		        var options = new RecipientFilterOptions(hasEnabledSocialSpy(r));
-		        return channel.recipientsFilter().filterRecipient(sender, r, options);
-	        })
-			.forEach(recipient -> recipient.sendMessage(formattedMessage.forRecipient(recipient),
-			                                            MessageType.CHAT, sender.getUuid()));
+			.forEach(recipient -> {
+				var rOptions = new RecipientFilterOptions(hasEnabledSocialSpy(recipient));
+				var visibility = channel.recipientsFilter().filterRecipient(sender, recipient, rOptions);
+				if (visibility.isVisible()) {
+					var mOptions = new MessageOptions(visibility == MessageVisibility.SOCIAL_SPY);
+					recipient.sendMessage(formattedMessage.forRecipient(recipient, mOptions), MessageType.CHAT, sender.getUuid());
+				}
+			});
 	}
 
 	private void logToServer(ServerPlayerEntity sender, FormattedMessage formattedMessage) {
-		var text = formattedMessage.forRecipient(null);
+		var text = formattedMessage.forRecipient(null, new MessageOptions(false));
 		var consoleAdaptedMessage = FORMATTING_REGEX.matcher(text.asString()).replaceAll("");
 		minecraftServer.sendSystemMessage(Text.of(consoleAdaptedMessage), sender.getUuid());
 	}
@@ -117,16 +122,17 @@ public class ChatManager implements MessageSender {
 			throw new ChatException("This player is not connected");
 		}
 
+		var options = new MessageOptions(false);
 		var message = new Message(sender, messageContent);
 		var pmFormats = settings.privateMessageFormatters();
 		var formattedMessage = pmFormats.consoleFormatter().prepare(message);
-		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(recipient), sender.getUuid());
+		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(recipient, options), sender.getUuid());
 
 		formattedMessage = pmFormats.senderIsYouFormatter().prepare(message);
-		sender.sendMessage(formattedMessage.forRecipient(recipient), false);
+		sender.sendMessage(formattedMessage.forRecipient(recipient, options), false);
 
 		formattedMessage = pmFormats.senderIsOtherFormatter().prepare(message);
-		recipient.sendMessage(formattedMessage.forRecipient(recipient), false);
+		recipient.sendMessage(formattedMessage.forRecipient(recipient, options), false);
 
 		var recipientSettings = playerConfigurationManager.getOrCreatePlayerSettings(recipient);
 		recipientSettings.setLastMessageSender(sender.getUuid());

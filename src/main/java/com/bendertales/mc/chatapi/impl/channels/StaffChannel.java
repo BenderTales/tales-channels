@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
+import com.bendertales.mc.chatapi.api.MessageVisibility;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,9 +29,14 @@ public class StaffChannel implements ChannelDefault {
 
 	@Override
 	public RecipientFilter getRecipientsFilter() {
-		return (sender, player, options) -> sender.equals(player)
-	       || Perms.isOp(player)
-	       || Perms.hasAny(player, singleton(PERMISSION));
+		return (sender, player, options) -> {
+			if (sender.equals(player)
+					|| Perms.isOp(player)
+					|| Perms.hasAny(player, singleton(PERMISSION))) {
+				return MessageVisibility.SHOW;
+			}
+			return MessageVisibility.HIDE;
+		};
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ChannelDefault;
+import com.bendertales.mc.chatapi.api.MessageVisibility;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,10 +36,19 @@ public class LocalChannel implements ChannelDefault {
 
 	@Override
 	public RecipientFilter getRecipientsFilter() {
-		return (sender, recipient, options) -> sender.equals(recipient)
-		    || options.isRecipientSocialSpy()
-            || (sender.getWorld().equals(recipient.getWorld())
-			&& sender.getBlockPos().isWithinDistance(recipient.getBlockPos(), chatManager.getLocalChannelDistance()));
+		return (sender, recipient, options) -> {
+			if (sender.equals(recipient)
+			    || (sender.getWorld().equals(recipient.getWorld())
+		            && sender.getBlockPos().isWithinDistance(recipient.getBlockPos(),chatManager.getLocalChannelDistance()))) {
+				return MessageVisibility.SHOW;
+			}
+
+			if (options.isRecipientSocialSpy()) {
+				return MessageVisibility.SOCIAL_SPY;
+			}
+
+			return MessageVisibility.HIDE;
+		};
 	}
 
 	@Override
