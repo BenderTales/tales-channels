@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.mojang.brigadier.Command;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
 
 

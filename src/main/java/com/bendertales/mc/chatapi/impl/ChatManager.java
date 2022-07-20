@@ -11,7 +11,7 @@ import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.MessageOptions;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
 import com.bendertales.mc.chatapi.impl.vo.Settings;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -93,15 +93,15 @@ public class ChatManager implements MessageSender {
 				var visibility = channel.recipientsFilter().filterRecipient(sender, recipient, rOptions);
 				if (visibility.isVisible()) {
 					var mOptions = new MessageOptions(visibility == MessageVisibility.SOCIAL_SPY);
-					recipient.sendMessage(formattedMessage.forRecipient(recipient, mOptions), MessageType.CHAT, sender.getUuid());
+					recipient.sendMessage(formattedMessage.forRecipient(recipient, mOptions), MessageType.CHAT);
 				}
 			});
 	}
 
 	private void logToServer(ServerPlayerEntity sender, FormattedMessage formattedMessage) {
 		var text = formattedMessage.forRecipient(null, new MessageOptions(false));
-		var consoleAdaptedMessage = FORMATTING_REGEX.matcher(text.asString()).replaceAll("");
-		minecraftServer.sendSystemMessage(Text.of(consoleAdaptedMessage), sender.getUuid());
+		var consoleAdaptedMessage = FORMATTING_REGEX.matcher(text.getString()).replaceAll("");
+		minecraftServer.sendMessage(Text.of(consoleAdaptedMessage));
 	}
 
 	public void respondToPrivateMessage(ServerPlayerEntity sender, String messageContent) throws ChatException {
@@ -126,7 +126,7 @@ public class ChatManager implements MessageSender {
 		var message = new Message(sender, messageContent);
 		var pmFormats = settings.privateMessageFormatters();
 		var formattedMessage = pmFormats.consoleFormatter().prepare(message);
-		minecraftServer.sendSystemMessage(formattedMessage.forRecipient(recipient, options), sender.getUuid());
+		minecraftServer.sendMessage(formattedMessage.forRecipient(recipient, options));
 
 		formattedMessage = pmFormats.senderIsYouFormatter().prepare(message);
 		sender.sendMessage(formattedMessage.forRecipient(recipient, options), false);

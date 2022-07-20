@@ -10,9 +10,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -31,7 +33,8 @@ public class CmdUnmute implements ModCommand {
 	}
 
 	@Override
-	public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+	public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+	                     CommandManager.RegistrationEnvironment environment) {
 		dispatcher.register(
 			literal("channel")
 				.then(literal("unmute")
@@ -84,7 +87,7 @@ public class CmdUnmute implements ModCommand {
 	}
 
 	private Text getSuccessMessage(ServerPlayerEntity player) {
-		return Text.of(String.format("%s is now allowed to speak", player.getName().asString()));
+		return Text.of(String.format("%s is now allowed to speak", player.getEntityName()));
 	}
 
 

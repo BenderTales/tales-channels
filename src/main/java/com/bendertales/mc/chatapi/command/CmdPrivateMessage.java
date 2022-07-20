@@ -10,10 +10,12 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -29,7 +31,8 @@ public class CmdPrivateMessage implements ModCommand {
 	}
 
 	@Override
-	public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+	public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+	                     CommandManager.RegistrationEnvironment environment) {
 		dispatcher.register(
 			literal("msg")
 				.requires(getRequirements())
@@ -63,7 +66,7 @@ public class CmdPrivateMessage implements ModCommand {
 			chatManager.sendPrivateMessage(sender, recipient, message);
 		}
 		catch (ChatException e) {
-			var msg = new LiteralText(e.getMessage()).formatted(Formatting.RED);
+			var msg = Text.literal(e.getMessage()).formatted(Formatting.RED);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(msg), msg);
 		}
 		return SINGLE_SUCCESS;
@@ -78,7 +81,7 @@ public class CmdPrivateMessage implements ModCommand {
 			chatManager.respondToPrivateMessage(sender, message);
 		}
 		catch (ChatException e) {
-			var msg = new LiteralText(e.getMessage()).formatted(Formatting.RED);
+			var msg = Text.literal(e.getMessage()).formatted(Formatting.RED);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(msg), msg);
 		}
 		return SINGLE_SUCCESS;

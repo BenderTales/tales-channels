@@ -7,8 +7,7 @@ import com.bendertales.mc.chatapi.command.shortcuts.CmdChatHelpers;
 import com.bendertales.mc.chatapi.command.shortcuts.CmdChatModeration;
 import com.bendertales.mc.chatapi.command.shortcuts.CmdChatStaff;
 import com.bendertales.mc.chatapi.impl.ChatManager;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 
 public class CommandRegistries {

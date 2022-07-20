@@ -1,6 +1,5 @@
 package com.bendertales.mc.chatapi.config;
 
-import java.util.List;
 import java.util.Set;
 
 import net.minecraft.util.Identifier;

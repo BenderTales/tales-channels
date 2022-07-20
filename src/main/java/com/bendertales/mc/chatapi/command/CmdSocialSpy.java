@@ -7,8 +7,10 @@ import com.bendertales.mc.chatapi.impl.ChatManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -23,7 +25,8 @@ public class CmdSocialSpy implements ModCommand {
 	}
 
 	@Override
-	public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+	public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+	                     CommandManager.RegistrationEnvironment environment) {
 		dispatcher.register(
 			literal("channel")
 				.then(literal("socialspy")
@@ -45,7 +48,7 @@ public class CmdSocialSpy implements ModCommand {
 		var cmdSource = context.getSource();
 		var player = cmdSource.getPlayer();
 		chatManager.enableSocialSpy(player);
-		cmdSource.sendFeedback(new LiteralText("Social spy enabled").formatted(Formatting.GREEN), true);
+		cmdSource.sendFeedback(Text.literal("Social spy enabled").formatted(Formatting.GREEN), true);
 		return 0;
 	}
 
@@ -54,7 +57,7 @@ public class CmdSocialSpy implements ModCommand {
 		var player = cmdSource.getPlayer();
 
 		chatManager.disableSocialSpy(player);
-		cmdSource.sendFeedback(new LiteralText("Social spy disabled").formatted(Formatting.GOLD), true);
+		cmdSource.sendFeedback(Text.literal("Social spy disabled").formatted(Formatting.GOLD), true);
 		return 0;
 	}
 

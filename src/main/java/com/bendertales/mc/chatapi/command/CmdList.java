@@ -9,6 +9,8 @@ import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -63,7 +65,8 @@ public class CmdList implements ModCommand {
 	}
 
 	@Override
-	public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+	public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+	                     CommandManager.RegistrationEnvironment environment) {
 		dispatcher.register(
 			literal("channel")
 				.then(literal("list")
