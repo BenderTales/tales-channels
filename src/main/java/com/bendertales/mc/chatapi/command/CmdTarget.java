@@ -12,7 +12,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -40,7 +39,7 @@ public class CmdTarget implements ModCommand {
 		try {
 			chatManager.changeTargetedChannel(player, channelId);
 			var msg = Text.literal("%s is now the active channel".formatted(channelId)).formatted(Formatting.GREEN);
-			player.sendMessage(msg, MessageType.SYSTEM);
+			player.sendMessage(msg, true);
 		}
 		catch (ChatException e) {
 			var message = Text.of(e.getMessage());

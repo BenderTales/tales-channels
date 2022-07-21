@@ -11,7 +11,6 @@ import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.MessageOptions;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
 import com.bendertales.mc.chatapi.impl.vo.Settings;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -93,7 +92,7 @@ public class ChatManager implements MessageSender {
 				var visibility = channel.recipientsFilter().filterRecipient(sender, recipient, rOptions);
 				if (visibility.isVisible()) {
 					var mOptions = new MessageOptions(visibility == MessageVisibility.SOCIAL_SPY);
-					recipient.sendMessage(formattedMessage.forRecipient(recipient, mOptions), MessageType.CHAT);
+					recipient.sendMessage(formattedMessage.forRecipient(recipient, mOptions), false);
 				}
 			});
 	}
