@@ -4,7 +4,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public interface MessageSender {
+public interface Messenger {
 
 	void sendMessage(ServerPlayerEntity sender, String message, Identifier channelId) throws ChatException;
 }

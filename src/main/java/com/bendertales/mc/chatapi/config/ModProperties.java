@@ -5,7 +5,7 @@ import java.util.Map;
 import net.minecraft.util.Identifier;
 
 
-public class ModConfiguration {
+public class ModProperties {
 
 	private Identifier        defaultChannel;
 	private int localChannelDistance;

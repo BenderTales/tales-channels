@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.List;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.MessageSender;
+import com.bendertales.mc.chatapi.api.Messenger;
 import com.bendertales.mc.chatapi.impl.channels.HelpersChannel;
 import net.minecraft.util.Identifier;
 
 
 public class CmdChatHelpers extends ShortcutModCommand{
 
-	public CmdChatHelpers(MessageSender messageSender) {
-		super(messageSender);
+	public CmdChatHelpers(Messenger messenger) {
+		super(messenger);
 	}
 
 	@Override

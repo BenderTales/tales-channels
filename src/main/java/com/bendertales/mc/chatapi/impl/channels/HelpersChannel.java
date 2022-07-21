@@ -3,8 +3,8 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.MessageVisibility;
+import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import static java.util.Collections.singleton;
 
 
-public class HelpersChannel implements ChannelDefault {
+public class HelpersChannel implements ModChannelImplementationsProvider {
 
 	public static final String PERMISSION = "chatapi.channels.helpers";
 

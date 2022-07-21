@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.config.PlayerConfiguration;
+import com.bendertales.mc.chatapi.config.PlayerProperties;
 import com.bendertales.mc.chatapi.config.serialization.IdentifierSerializer;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
@@ -18,14 +18,14 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 
-public class PlayerConfigurationManager {
+public class PlayerSettingsManager {
 
 	private final Map<UUID, PlayerSettings> playersSettingsById = new HashMap<>();
 	private final Path configFolder;
 
 	private Identifier defaultChannel;
 
-	public PlayerConfigurationManager() {
+	public PlayerSettingsManager() {
 		var modContainer = FabricLoader.getInstance().getGameDir()
 		                               .resolve("mods").resolve(ChatConstants.MODID);
 		configFolder = modContainer.resolve("players");
@@ -58,8 +58,8 @@ public class PlayerConfigurationManager {
 	}
 
 	@NotNull
-	private PlayerConfiguration defaultConfiguration() {
-		var playerConfiguration = new PlayerConfiguration();
+	private PlayerProperties defaultConfiguration() {
+		var playerConfiguration = new PlayerProperties();
 		playerConfiguration.setActiveChannel(defaultChannel);
 		playerConfiguration.setMutedChannels(Collections.emptySet());
 		return playerConfiguration;
@@ -107,7 +107,7 @@ public class PlayerConfigurationManager {
 		settings.setEnabledSocialSpy(false);
 	}
 
-	private PlayerConfiguration tryLoadPlayerConfiguration(ServerPlayerEntity player) {
+	private PlayerProperties tryLoadPlayerConfiguration(ServerPlayerEntity player) {
 		try {
 			return loadPlayerConfiguration(player);
 		}
@@ -117,12 +117,12 @@ public class PlayerConfigurationManager {
 	}
 
 
-	private PlayerConfiguration loadPlayerConfiguration(ServerPlayerEntity player) throws IOException {
+	private PlayerProperties loadPlayerConfiguration(ServerPlayerEntity player) throws IOException {
 		var playerFile = configFolder.resolve(player.getUuid().toString() + ".json");
 		if (Files.exists(playerFile)) {
 			var playerJson = Files.readString(playerFile);
 			var gson = getGson();
-			return gson.fromJson(playerJson, PlayerConfiguration.class);
+			return gson.fromJson(playerJson, PlayerProperties.class);
 		}
 
 		return defaultConfiguration();
@@ -143,7 +143,7 @@ public class PlayerConfigurationManager {
 		}
 		var playerFile = configFolder.resolve(playerSettings.getPlayerUuid().toString() + ".json");
 
-		var playerConfiguration = new PlayerConfiguration();
+		var playerConfiguration = new PlayerProperties();
 		playerConfiguration.setActiveChannel(playerSettings.getCurrentChannel());
 		playerConfiguration.setMutedChannels(playerSettings.getMutedChannels());
 

@@ -3,15 +3,15 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.MessageVisibility;
+import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.chatapi.impl.ChatManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public class LocalChannel implements ChannelDefault {
+public class LocalChannel implements ModChannelImplementationsProvider {
 
 	private final ChatManager chatManager;
 

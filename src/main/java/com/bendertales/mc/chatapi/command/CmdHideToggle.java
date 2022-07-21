@@ -50,7 +50,7 @@ public class CmdHideToggle implements ModCommand {
 	@Override
 	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		var cmdSource = context.getSource();
-		var player = cmdSource.getPlayer();
+		var player = cmdSource.getPlayerOrThrow();
 		var channelId = context.getArgument("channel", Identifier.class);
 
 		var optChannel = chatManager.getChannel(channelId);

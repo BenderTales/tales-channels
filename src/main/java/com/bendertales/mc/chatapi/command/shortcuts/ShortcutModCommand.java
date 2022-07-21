@@ -1,7 +1,7 @@
 package com.bendertales.mc.chatapi.command.shortcuts;
 
 import com.bendertales.mc.chatapi.api.ChatException;
-import com.bendertales.mc.chatapi.api.MessageSender;
+import com.bendertales.mc.chatapi.api.Messenger;
 import com.bendertales.mc.chatapi.command.ModCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -21,10 +21,10 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public abstract class ShortcutModCommand implements ModCommand {
 
-	private final MessageSender messageSender;
+	private final Messenger messenger;
 
-	protected ShortcutModCommand(MessageSender messageSender) {
-		this.messageSender = messageSender;
+	protected ShortcutModCommand(Messenger messenger) {
+		this.messenger = messenger;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public abstract class ShortcutModCommand implements ModCommand {
 		var message = context.getArgument("message", String.class);
 
 		try {
-			messageSender.sendMessage(player, message, getChannelId());
+			messenger.sendMessage(player, message, getChannelId());
 		}
 		catch (ChatException e) {
 			var msg = Text.literal(e.getMessage()).formatted(Formatting.RED);

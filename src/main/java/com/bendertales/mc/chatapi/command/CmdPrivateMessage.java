@@ -57,7 +57,7 @@ public class CmdPrivateMessage implements ModCommand {
 	@Override
 	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		var cmdSource = context.getSource();
-		var sender = cmdSource.getPlayer();
+		var sender = cmdSource.getPlayerOrThrow();
 		var playerSelector = context.getArgument("player", EntitySelector.class);
 		var recipient = playerSelector.getPlayer(cmdSource);
 		var message = context.getArgument("message", String.class);
@@ -74,7 +74,7 @@ public class CmdPrivateMessage implements ModCommand {
 
 	public int respond(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		var cmdSource = context.getSource();
-		var sender = cmdSource.getPlayer();
+		var sender = cmdSource.getPlayerOrThrow();
 		var message = context.getArgument("message", String.class);
 
 		try {

@@ -22,11 +22,11 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 
-public class CmdTarget implements ModCommand {
+public class CmdSelect implements ModCommand {
 
 	private final ChatManager chatManager;
 
-	public CmdTarget(ChatManager chatManager) {
+	public CmdSelect(ChatManager chatManager) {
 		this.chatManager = chatManager;
 	}
 
@@ -51,7 +51,7 @@ public class CmdTarget implements ModCommand {
 
 	@Override
 	public Collection<String> getRequiredPermissions() {
-		return List.of("chatapi.commands.admin", "chatapi.commands.target");
+		return List.of("chatapi.commands.admin", "chatapi.commands.selected");
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class CmdTarget implements ModCommand {
 	                     CommandManager.RegistrationEnvironment environment) {
 		dispatcher.register(
 			literal("channel")
-				.then(literal("target")
+				.then(literal("select")
 			        .requires(getRequirements())
 				        .then(argument("channel", IdentifierArgumentType.identifier())
 			                .suggests(new SenderChannelsSuggestionProvider(chatManager))

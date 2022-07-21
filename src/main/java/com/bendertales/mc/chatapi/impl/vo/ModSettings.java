@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.util.Identifier;
 
 
-public record Settings(
+public record ModSettings(
 	Identifier defaultChannel,
 	int localChannelDistance,
 	PrivateMessageFormatters privateMessageFormatters,

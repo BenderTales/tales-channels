@@ -5,7 +5,7 @@ import java.util.Set;
 import net.minecraft.util.Identifier;
 
 
-public class PlayerConfiguration {
+public class PlayerProperties {
 
 	private Identifier activeChannel;
 	private Set<Identifier> mutedChannels;

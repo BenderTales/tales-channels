@@ -29,8 +29,9 @@ public class CmdList implements ModCommand {
 	@Override
 	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		var cmdSource = context.getSource();
-		if (cmdSource.getEntity() != null) {
-			return listToPlayer(cmdSource.getPlayer());
+		var player = cmdSource.getPlayer();
+		if (player != null) {
+			return listToPlayer(player);
 		}
 
 		return listToServer(cmdSource);
@@ -51,7 +52,7 @@ public class CmdList implements ModCommand {
 
 		for (PlayerChannelStatus status : channelsStatus) {
 			var channelName = status.channel().id().toString();
-			String firstColor = status.target() ? "§3" : "§f";
+			String firstColor = status.selected() ? "§3" : "§f";
 			var hideStatus = status.hidden() ? "§cHidden" : "§aVisible";
 			player.sendMessage(Text.of(firstColor + channelName + ": " + hideStatus), false);
 		}

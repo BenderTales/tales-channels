@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.MessageVisibility;
+import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.chatapi.impl.helper.Perms;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public class SupportChannel implements ChannelDefault {
+public class SupportChannel implements ModChannelImplementationsProvider {
 
 	public static final String SEND_PERMISSION = "chatapi.channels.support.send";
 	public static final String READ_PERMISSION = "chatapi.channels.support.read";

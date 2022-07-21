@@ -6,12 +6,12 @@ import com.bendertales.mc.chatapi.impl.Registry;
 
 public class ChatAPI {
 
-	public static MessageSender getMessageSender() {
+	public static Messenger getMessageSender() {
 		return ChatManager.get();
 	}
 
-	public static void registerChannel(ChannelDefault channel) {
-		Registry.CHANNEL_HANDLERS.register(channel);
+	public static void registerChannel(ModChannelImplementationsProvider channelProvider) {
+		Registry.CHANNEL_HANDLERS.register(channelProvider);
 	}
 
 	public static void registerPlaceholder(PlaceholderHandler placeholderHandler) {

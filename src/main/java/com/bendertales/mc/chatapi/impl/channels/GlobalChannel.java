@@ -4,14 +4,14 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.ChannelDefault;
 import com.bendertales.mc.chatapi.api.MessageVisibility;
+import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
 import com.bendertales.mc.chatapi.api.RecipientFilter;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 
-public class GlobalChannel implements ChannelDefault {
+public class GlobalChannel implements ModChannelImplementationsProvider {
 
 	public static final String PERMISSION = "chatapi.channels.global";
 
