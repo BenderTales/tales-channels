@@ -1,28 +1,25 @@
 package com.bendertales.mc.chatapi.impl.formats;
 
 import com.bendertales.mc.chatapi.ChatConstants;
+import com.bendertales.mc.chatapi.api.AbstractPlaceholderHandler;
+import com.bendertales.mc.chatapi.api.Message;
 import com.bendertales.mc.chatapi.api.PlaceholderFormatter;
 import com.bendertales.mc.chatapi.api.PlaceholderHandler;
 import net.minecraft.util.Identifier;
 
 
-public class MessagePlaceholderHandler implements PlaceholderHandler {
+public class MessagePlaceholderHandler extends AbstractPlaceholderHandler
+		implements PlaceholderHandler {
 
 	private static final String MESSAGE_PLACEHOLDER = "%MESSAGE%";
 
-	@Override
-	public int getDefaultPriorityOrder() {
-		return 99;
-	}
-
-	@Override
-	public boolean shouldApplyFormat(String format) {
-		return format.contains(MESSAGE_PLACEHOLDER);
+	public MessagePlaceholderHandler() {
+		super(MESSAGE_PLACEHOLDER);
 	}
 
 	@Override
 	public PlaceholderFormatter getPlaceholderFormatter() {
-		return (format,  message) -> format.replace(MESSAGE_PLACEHOLDER, message.content());
+		return Message::content;
 	}
 
 	@Override

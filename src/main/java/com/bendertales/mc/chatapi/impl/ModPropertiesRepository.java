@@ -3,23 +3,18 @@ package com.bendertales.mc.chatapi.impl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
 import com.bendertales.mc.chatapi.api.PlaceholderHandler;
 import com.bendertales.mc.chatapi.config.ChannelProperties;
 import com.bendertales.mc.chatapi.config.ModProperties;
-import com.bendertales.mc.chatapi.config.PlaceholderProperties;
 import com.bendertales.mc.chatapi.config.PrivateMessageProperties;
 import com.bendertales.mc.chatapi.config.serialization.IdentifierSerializer;
 import com.bendertales.mc.chatapi.impl.messages.MessageFormatter;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.ModSettings;
-import com.bendertales.mc.chatapi.impl.vo.Placeholder;
 import com.bendertales.mc.chatapi.impl.vo.PrivateMessageFormatters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -43,11 +38,9 @@ public class ModPropertiesRepository {
 		var modConfiguration = tryReadConfiguration();
 		updateFileIfNecessary(modConfiguration);
 
-		var placeholdersById = extractSortedPlaceholders(modConfiguration);
+		var channels = prepareChannels(modConfiguration);
 
-		var channels = prepareChannels(modConfiguration, placeholdersById);
-
-		var privateMessageFormatters = createPrivateMessageFormatters(modConfiguration, placeholdersById);
+		var privateMessageFormatters = createPrivateMessageFormatters(modConfiguration);
 
 		return new ModSettings(modConfiguration.getDefaultChannel(),
 		                       modConfiguration.getLocalChannelDistance(),
@@ -56,19 +49,17 @@ public class ModPropertiesRepository {
 	}
 
 	@NotNull
-	private PrivateMessageFormatters createPrivateMessageFormatters(ModProperties modProperties,
-	                                                                Map<Identifier, Placeholder> placeholdersById) {
+	private PrivateMessageFormatters createPrivateMessageFormatters(ModProperties modProperties) {
 		var pmProps = modProperties.getPrivateMessages();
 		return new PrivateMessageFormatters(
-			createMessageFormatter(pmProps.getConsoleFormat(), placeholdersById),
-			createMessageFormatter(pmProps.getSenderIsYouFormat(), placeholdersById),
-			createMessageFormatter(pmProps.getSenderIsOtherFormat(), placeholdersById)
+			createMessageFormatter(pmProps.getConsoleFormat()),
+			createMessageFormatter(pmProps.getSenderIsYouFormat()),
+			createMessageFormatter(pmProps.getSenderIsOtherFormat())
 		);
 	}
 
 	@NotNull
-	private Object2ObjectOpenHashMap<Identifier, Channel> prepareChannels(
-			ModProperties modProperties, Map<Identifier, Placeholder> placeholdersById) {
+	private Object2ObjectOpenHashMap<Identifier, Channel> prepareChannels(ModProperties modProperties) {
 		var channels = new Object2ObjectOpenHashMap<Identifier, Channel>();
 
 		modProperties.getChannels().entrySet().stream()
@@ -78,7 +69,7 @@ public class ModPropertiesRepository {
 				var channelDefault = Registry.CHANNEL_HANDLERS.get(c.id());
 				var format = c.format();
 
-				var messageFormatter = createMessageFormatter(format, placeholdersById);
+				var messageFormatter = createMessageFormatter(format);
 
 				return new Channel(channelDefault.getId(), channelDefault.getPrefixSelector(), messageFormatter,
 		                           channelDefault.getRecipientsFilter(), channelDefault.getSenderFilter());
@@ -90,15 +81,13 @@ public class ModPropertiesRepository {
 	}
 
 	@NotNull
-	private MessageFormatter createMessageFormatter(String format, Map<Identifier, Placeholder> placeholdersById) {
-		return new MessageFormatter(format, extractNecessaryPlaceholders(placeholdersById, format));
+	private MessageFormatter createMessageFormatter(String format) {
+		return new MessageFormatter(format, extractNecessaryPlaceholders(format));
 	}
 
-	private List<Placeholder> extractNecessaryPlaceholders(Map<Identifier, Placeholder> placeholdersById, String format) {
+	private List<PlaceholderHandler> extractNecessaryPlaceholders(String format) {
 		return Registry.FORMAT_HANDLERS.stream()
             .filter(ph -> ph.shouldApplyFormat(format))
-            .map(ph -> placeholdersById.get(ph.getId()))
-            .sorted(Comparator.comparingInt(Placeholder::applyOrder))
             .toList();
 	}
 
@@ -133,22 +122,9 @@ public class ModPropertiesRepository {
 		modConfiguration.setPrivateMessages(privateMessageProperties);
 		modConfiguration.setDefaultChannel(ChatConstants.Ids.Channels.GLOBAL);
 		modConfiguration.setChannels(new Object2ObjectOpenHashMap<>());
-		modConfiguration.setPlaceholders(new Object2ObjectOpenHashMap<>());
 		return modConfiguration;
 	}
 
-	@NotNull
-	private Map<Identifier, Placeholder> extractSortedPlaceholders(ModProperties modProperties) {
-		return modProperties.getPlaceholders()
-		                    .entrySet()
-		                    .stream()
-		                    .map(e -> {
-	            var ph = Registry.FORMAT_HANDLERS.get(e.getKey());
-	            return new Placeholder(ph.getId(), e.getValue().getApplicationOrder(),
-	                                   ph.getPlaceholderFormatter(), ph.getSpecificToRecipientPlaceholderFormatter());
-            })
-		                    .collect(Collectors.toMap(Placeholder::id, p -> p));
-	}
 
 	private void updateFileIfNecessary(ModProperties modProperties) {
 		boolean changedConfiguration = false;
@@ -156,17 +132,6 @@ public class ModPropertiesRepository {
 		if (modProperties.getLocalChannelDistance() < 4) {
 			modProperties.setLocalChannelDistance(4);
 			changedConfiguration = true;
-		}
-
-		var configPlaceholders = modProperties.getPlaceholders();
-		for (PlaceholderHandler placeholderHandler : Registry.FORMAT_HANDLERS) {
-			var placeholderId = placeholderHandler.getId();
-			if (!configPlaceholders.containsKey(placeholderId)) {
-				var placeholderProperties = new PlaceholderProperties();
-				placeholderProperties.setApplicationOrder(placeholderHandler.getDefaultPriorityOrder());
-				configPlaceholders.put(placeholderId, placeholderProperties);
-				changedConfiguration = true;
-			}
 		}
 
 		var configChannels = modProperties.getChannels();

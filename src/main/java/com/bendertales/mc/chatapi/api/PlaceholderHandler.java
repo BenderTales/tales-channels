@@ -3,12 +3,12 @@ package com.bendertales.mc.chatapi.api;
 
 public interface PlaceholderHandler extends Identifiable {
 
-	int getDefaultPriorityOrder();
+	String getPlaceholder();
 	boolean shouldApplyFormat(String format);
 
 	PlaceholderFormatter getPlaceholderFormatter();
 
-	default SpecificToRecipientPlaceholderFormatter getSpecificToRecipientPlaceholderFormatter() {
+	default PerRecipientPlaceholderFormatter getPerRecipientPlaceholderFormatter() {
 		return null;
 	}
 

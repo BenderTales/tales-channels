@@ -12,7 +12,6 @@ public class ModProperties {
 
 	private PrivateMessageProperties privateMessages;
 
-	private Map<Identifier, PlaceholderProperties> placeholders;
 	private Map<Identifier, ChannelProperties>     channels;
 
 	public Identifier getDefaultChannel() {
@@ -37,14 +36,6 @@ public class ModProperties {
 
 	public void setPrivateMessages(PrivateMessageProperties privateMessages) {
 		this.privateMessages = privateMessages;
-	}
-
-	public Map<Identifier, PlaceholderProperties> getPlaceholders() {
-		return placeholders;
-	}
-
-	public void setPlaceholders(Map<Identifier, PlaceholderProperties> placeholders) {
-		this.placeholders = placeholders;
 	}
 
 	public Map<Identifier, ChannelProperties> getChannels() {
