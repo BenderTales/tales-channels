@@ -27,20 +27,20 @@ public class ChatManager implements Messenger {
 		return instance;
 	}
 
-	private final ModPropertiesRepository modPropertiesRepository = new ModPropertiesRepository();
-	private final PlayerSettingsManager   playerSettingsManager   = new PlayerSettingsManager();
+	private final ModSettingsRepository modSettingsRepository = new ModSettingsRepository();
+	private final PlayerDataRepository  playerManager         = new PlayerDataRepository();
 
 	private ModSettings              modSettings;
 	private Map<Identifier, Channel> channelsById;
 	private MinecraftServer minecraftServer;
 
 	public void reload() {
-		playerSettingsManager.clearSettings();
+		playerManager.clearCache();
 		load();
 	}
 
 	public void load() {
-		this.modSettings = modPropertiesRepository.loadSettings();
+		this.modSettings = modSettingsRepository.getConfig();
 		this.channelsById = modSettings.channels();
 
 		var channel = channelsById.get(modSettings.defaultChannel());
@@ -51,7 +51,7 @@ public class ChatManager implements Messenger {
 			}
 		}
 
-		this.playerSettingsManager.setDefaultChannel(channel == null ? null : channel.id());
+		this.playerManager.setDefaultChannel(channel == null ? null : channel.id());
 	}
 
 	public void setMinecraftServer(MinecraftServer minecraftServer) {
@@ -104,7 +104,7 @@ public class ChatManager implements Messenger {
 	}
 
 	public void respondToPrivateMessage(ServerPlayerEntity sender, String messageContent) throws ChatException {
-		var senderSettings = playerSettingsManager.getOrCreatePlayerSettings(sender);
+		var senderSettings = playerManager.get(sender);
 		var lastSenderUuid = senderSettings.getLastMessageSender();
 		if (lastSenderUuid == null) {
 			throw new ChatException("Nobody sent you a message recently");
@@ -133,8 +133,9 @@ public class ChatManager implements Messenger {
 		formattedMessage = pmFormats.senderIsOtherFormatter().prepare(message);
 		recipient.sendMessage(formattedMessage.forRecipient(recipient, options), false);
 
-		var recipientSettings = playerSettingsManager.getOrCreatePlayerSettings(recipient);
-		recipientSettings.setLastMessageSender(sender.getUuid());
+		playerManager.update(recipient, settings -> {
+			settings.setLastMessageSender(sender.getUuid());
+		});
 	}
 
 	private void ensureSenderIsAllowedInChannel(ServerPlayerEntity sender, Channel channel) throws ChatException {
@@ -142,17 +143,19 @@ public class ChatManager implements Messenger {
 			throw new ChatException("You cannot send a message in this channel.");
 		}
 
-		if (playerSettingsManager.isPlayerMutedInChannels(sender, channel)) {
+		if (playerManager.get(sender).isMutedInChannel(channel)) {
 			throw new ChatException("You are muted in this channel.");
 		}
 	}
 
 	private boolean hasEnabledSocialSpy(ServerPlayerEntity player) {
-		if (playerSettingsManager.hasPlayerEnabledSocialSpy(player)) {
+		if (playerManager.get(player).isEnabledSocialSpy()) {
 			var hasSocialSpyPermission = Perms.isOp(player)
                                || Perms.hasAny(player, List.of("chatapi.commands.admin", "chatapi.commands.socialspy"));
 			if (!hasSocialSpyPermission) {
-				playerSettingsManager.disableSocialSpy(player);
+				playerManager.update(player, settings -> {
+					settings.setEnabledSocialSpy(false);
+				});
 				return false;
 			}
 			return true;
@@ -165,8 +168,9 @@ public class ChatManager implements Messenger {
 		if (targetChannel == null) {
 			throw new ChatException("Channel not found");
 		}
-
-		playerSettingsManager.changeActiveChannel(player, targetChannel);
+		playerManager.update(player, settings -> {
+			settings.setCurrentChannel(channelId);
+		});
 	}
 
 	public int getLocalChannelDistance() {
@@ -178,7 +182,7 @@ public class ChatManager implements Messenger {
 	}
 
 	public List<PlayerChannelStatus> getPlayerChannelsStatus(ServerPlayerEntity sender) {
-		var playerSettings = playerSettingsManager.getOrCreatePlayerSettings(sender);
+		var playerSettings = playerManager.get(sender);
 		return channelsById.values().stream()
 			.filter(ch -> ch.senderFilter().test(sender))
 			.map(ch -> {
@@ -209,7 +213,7 @@ public class ChatManager implements Messenger {
 	}
 
 	private Channel getPlayerCurrentChannel(ServerPlayerEntity player) {
-		var playerSettings = playerSettingsManager.getOrCreatePlayerSettings(player);
+		var playerSettings = playerManager.get(player);
 		var channel = channelsById.get(playerSettings.getCurrentChannel());
 		if (channel == null) {
 			channel =  channelsById.get(ChatConstants.Ids.Channels.GLOBAL);
@@ -218,7 +222,7 @@ public class ChatManager implements Messenger {
 	}
 
 	public boolean isChannelHiddenForPlayer(Channel channel, ServerPlayerEntity player) {
-		return playerSettingsManager.isChannelHiddenForPlayer(channel, player);
+		return playerManager.get(player).isChannelHidden(channel);
 	}
 
 	public boolean isChannelVisibleForPlayer(Channel channel, ServerPlayerEntity player) {
@@ -226,25 +230,35 @@ public class ChatManager implements Messenger {
 	}
 
 	public boolean toggleHiddenChannelForPlayer(Channel channel, ServerPlayerEntity player) {
-		return playerSettingsManager.toggleHiddenChannelForPlayer(channel, player);
+		return playerManager.update(player, settings -> {
+			return settings.toggleHiddenChannel(channel);
+		});
 	}
 
 	private ChatManager() {
 	}
 
 	public void mutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channelsToMute) {
-		playerSettingsManager.mutePlayerInChannels(player, channelsToMute);
+		playerManager.update(player, settings -> {
+			settings.muteChannels(channelsToMute);
+		});
 	}
 
 	public void unmutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channels) {
-		playerSettingsManager.unmutePlayerInChannels(player, channels);
+		playerManager.update(player, settings -> {
+			settings.unmuteChannels(channels);
+		});
 	}
 
 	public void enableSocialSpy(ServerPlayerEntity player) {
-		playerSettingsManager.enableSocialSpy(player);
+		playerManager.update(player, settings -> {
+			settings.setEnabledSocialSpy(true);
+		});
 	}
 
 	public void disableSocialSpy(ServerPlayerEntity player) {
-		playerSettingsManager.disableSocialSpy(player);
+		playerManager.update(player, settings -> {
+			settings.setEnabledSocialSpy(false);
+		});
 	}
 }

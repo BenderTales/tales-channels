@@ -11,19 +11,13 @@ import net.minecraft.util.Identifier;
 
 public class PlayerSettings {
 
-	private final UUID                  playerUuid;
 	private final ObjectSet<Identifier> hiddenChannels = new ObjectOpenHashSet<>();
 	private final ObjectSet<Identifier> mutedChannels = new ObjectOpenHashSet<>();
 	private       Identifier            currentChannel;
 	private       boolean enabledSocialSpy = false;
 	private       UUID lastMessageSender = null;
 
-	public PlayerSettings(UUID playerUuid) {
-		this.playerUuid = playerUuid;
-	}
-
-	public UUID getPlayerUuid() {
-		return playerUuid;
+	public PlayerSettings() {
 	}
 
 	public UUID getLastMessageSender() {
