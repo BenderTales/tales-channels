@@ -5,12 +5,12 @@ import java.util.regex.Pattern;
 
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.api.*;
-import com.bendertales.mc.chatapi.impl.helper.Perms;
 import com.bendertales.mc.chatapi.impl.messages.FormattedMessage;
 import com.bendertales.mc.chatapi.impl.vo.Channel;
 import com.bendertales.mc.chatapi.impl.vo.MessageOptions;
 import com.bendertales.mc.chatapi.impl.vo.ModSettings;
 import com.bendertales.mc.chatapi.impl.vo.PlayerChannelStatus;
+import com.bendertales.mc.talesservercommon.helpers.Perms;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;

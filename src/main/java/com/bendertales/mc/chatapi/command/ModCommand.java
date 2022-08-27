@@ -3,7 +3,7 @@ package com.bendertales.mc.chatapi.command;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-import com.bendertales.mc.chatapi.impl.helper.Perms;
+import com.bendertales.mc.talesservercommon.helpers.Perms;
 import com.mojang.brigadier.Command;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
