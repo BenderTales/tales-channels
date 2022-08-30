@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.13-SNAPSHOT'
+    id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -12,6 +12,7 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    mavenLocal()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven {
         url "https://maven.pkg.jetbrains.space/tales-of-bender/p/mcsrv/maven"
@@ -32,7 +33,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
-    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.5"
+    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.6" changing true
 }
 
 processResources {

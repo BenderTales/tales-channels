@@ -9,19 +9,16 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 
-public class ClearingNativeCommands implements CommandRegistrationCallback {
+public class NativeCommandsClearer {
 
 	private static final List<String> commandsToRemove = List.of("msg", "say", "me", "tell", "w");
 
-	@Override
-	public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
-	                     CommandManager.RegistrationEnvironment environment) {
+	private NativeCommandsClearer() {}
+
+	public static void clear(CommandDispatcher<ServerCommandSource> dispatcher) {
 		var commandsRoot = dispatcher.getRoot();
 		Class<? extends RootCommandNode> rootCmdClass = commandsRoot.getClass();
 		Class<?> cmdClass = rootCmdClass.getSuperclass();
