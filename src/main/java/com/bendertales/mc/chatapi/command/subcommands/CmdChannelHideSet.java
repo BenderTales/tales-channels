@@ -23,14 +23,14 @@ public class CmdChannelHideSet {
 	}
 
 	public int setVisible(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		return 0;
+		return run(context, false);
 	}
 
 	public int setInvisible(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		return 0;
+		return run(context, true);
 	}
 
-	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+	private int run(CommandContext<ServerCommandSource> context, boolean hidden) throws CommandSyntaxException {
 		var cmdSource = context.getSource();
 		var player = cmdSource.getPlayerOrThrow();
 		var channelId = context.getArgument("channel", Identifier.class);
@@ -40,7 +40,7 @@ public class CmdChannelHideSet {
 			throw notFoundException.create();
 		}
 
-		boolean hidden = chatManager.toggleHiddenChannelForPlayer(optChannel.get(), player);
+		chatManager.setChannelHiddenForPlayer(optChannel.get(), player, hidden);
 		var msg = Text.of(hidden ? "Channel successfully hidden" : "Channel now visible");
 		player.sendMessage(msg, false);
 

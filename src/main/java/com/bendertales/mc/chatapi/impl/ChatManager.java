@@ -27,6 +27,9 @@ public class ChatManager implements Messenger {
 		return instance;
 	}
 
+	private ChatManager() {
+	}
+
 	private final ModSettingsRepository modSettingsRepository = new ModSettingsRepository();
 	private final PlayerDataRepository  playerManager         = new PlayerDataRepository();
 
@@ -235,7 +238,10 @@ public class ChatManager implements Messenger {
 		});
 	}
 
-	private ChatManager() {
+	public void setChannelHiddenForPlayer(Channel channel, ServerPlayerEntity player, boolean hidden) {
+		playerManager.update(player, settings -> {
+			settings.setHiddenChannel(channel, hidden);
+		});
 	}
 
 	public void mutePlayerInChannels(ServerPlayerEntity player, Collection<Channel> channelsToMute) {

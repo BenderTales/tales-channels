@@ -44,6 +44,15 @@ public class PlayerSettings {
 		return hiddenChannels.contains(channel.id());
 	}
 
+	public void setHiddenChannel(Channel channel, boolean hidden) {
+		if (hidden) {
+			hiddenChannels.add(channel.id());
+		}
+		else {
+			hiddenChannels.remove(channel.id());
+		}
+	}
+
 	public boolean toggleHiddenChannel(Channel channel) {
 		var channelId = channel.id();
 		if (hiddenChannels.contains(channelId)) {
