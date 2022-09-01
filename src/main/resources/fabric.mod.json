@@ -28,6 +28,6 @@
     "fabricloader": ">=0.14.8",
     "fabric": "*",
     "minecraft": "1.19.2",
-    "fabric-permissions-api-v0": "*"
+    "tales-server-common": ">=1.19.2_1.0.0-SNAPSHOT.6"
   }
 }
