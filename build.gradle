@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = "${project.minecraft_version}-${project.mod_version}"
+version = "${project.minecraft_version}_${project.mod_version}"
 group = project.maven_group
 
 repositories {
@@ -33,7 +33,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
-    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.6" changing true
+    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.6"
 }
 
 processResources {
