@@ -32,8 +32,7 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation 'me.lucko:fabric-permissions-api:0.2-SNAPSHOT'
-    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.6"
+    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.7"
 }
 
 processResources {
