@@ -1,6 +1,7 @@
 package com.bendertales.mc.chatapi.impl.messages;
 
-import com.bendertales.mc.chatapi.api.PlaceholderFormatter;
+
+import fr.bendertales.mc.channels.api.PlaceholderFormatter;
 
 
 record IndexedPlaceholderFormatter(

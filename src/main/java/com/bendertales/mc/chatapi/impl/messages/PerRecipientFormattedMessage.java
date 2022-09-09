@@ -2,15 +2,15 @@ package com.bendertales.mc.chatapi.impl.messages;
 
 import java.util.List;
 
-import com.bendertales.mc.chatapi.api.Message;
 import com.bendertales.mc.chatapi.impl.vo.MessageOptions;
+import fr.bendertales.mc.channels.api.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 
 public class PerRecipientFormattedMessage implements FormattedMessage {
 
-	private final Message                                message;
+	private final Message                                    message;
 	private final List<IndexedRecipientPlaceholderFormatter> recipientPlaceholderFormatters;
 	private final String                                 line;
 

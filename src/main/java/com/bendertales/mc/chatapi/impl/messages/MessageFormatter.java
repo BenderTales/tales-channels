@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import com.bendertales.mc.chatapi.api.Message;
-import com.bendertales.mc.chatapi.api.PlaceholderHandler;
+import fr.bendertales.mc.channels.api.Message;
+import fr.bendertales.mc.channels.api.PlaceholderHandler;
 
 
 public class MessageFormatter {

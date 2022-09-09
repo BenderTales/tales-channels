@@ -1,8 +1,8 @@
 package com.bendertales.mc.chatapi.mixin;
 
 
-import com.bendertales.mc.chatapi.api.ChatException;
 import com.bendertales.mc.chatapi.impl.ChatManager;
+import fr.bendertales.mc.channels.api.ChatException;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.PlayerManager;

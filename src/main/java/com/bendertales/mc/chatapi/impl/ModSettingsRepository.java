@@ -4,8 +4,6 @@ package com.bendertales.mc.chatapi.impl;
 import java.util.List;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
-import com.bendertales.mc.chatapi.api.PlaceholderHandler;
 import com.bendertales.mc.chatapi.config.ChannelProperties;
 import com.bendertales.mc.chatapi.config.ModProperties;
 import com.bendertales.mc.chatapi.config.PrivateMessageProperties;
@@ -17,6 +15,8 @@ import com.bendertales.mc.talesservercommon.repository.ModPaths;
 import com.bendertales.mc.talesservercommon.repository.config.ConfigRepository;
 import com.bendertales.mc.talesservercommon.repository.serialization.CommonSerializers;
 import com.bendertales.mc.talesservercommon.repository.serialization.JsonSerializerRegistration;
+import fr.bendertales.mc.channels.api.ModChannelImplementationsProvider;
+import fr.bendertales.mc.channels.api.PlaceholderHandler;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;

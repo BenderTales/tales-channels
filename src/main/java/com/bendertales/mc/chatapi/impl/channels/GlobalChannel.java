@@ -4,9 +4,9 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.MessageVisibility;
-import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
-import com.bendertales.mc.chatapi.api.RecipientFilter;
+import fr.bendertales.mc.channels.api.MessageVisibility;
+import fr.bendertales.mc.channels.api.ModChannelImplementationsProvider;
+import fr.bendertales.mc.channels.api.RecipientFilter;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -27,9 +27,6 @@ public class GlobalChannel implements ModChannelImplementationsProvider {
 
 	@Override
 	public Predicate<ServerPlayerEntity> getSenderFilter() {
-		/* return (player) -> Perms.isOp(player)
-            || Perms.hasAny(player, singleton(PERMISSION)); */
-
 		return (player) -> true;
 	}
 

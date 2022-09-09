@@ -3,10 +3,10 @@ package com.bendertales.mc.chatapi.impl.channels;
 import java.util.function.Predicate;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.MessageVisibility;
-import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
-import com.bendertales.mc.chatapi.api.RecipientFilter;
 import com.bendertales.mc.talesservercommon.helpers.Perms;
+import fr.bendertales.mc.channels.api.MessageVisibility;
+import fr.bendertales.mc.channels.api.ModChannelImplementationsProvider;
+import fr.bendertales.mc.channels.api.RecipientFilter;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 

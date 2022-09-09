@@ -15,6 +15,13 @@ repositories {
     mavenLocal()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven {
+        url = uri("https://maven.pkg.github.com/BenderTales/BenderTales")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }
+    }
+    maven {
         url "https://maven.pkg.jetbrains.space/tales-of-bender/p/mcsrv/maven"
         credentials {
             username = "$TOB_SPACE_USERNAME"
@@ -33,6 +40,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.7"
+    include(modImplementation "fr.bendertales.mc:tales-channels-api:1.19.2-1.0.0+RC")
 }
 
 processResources {

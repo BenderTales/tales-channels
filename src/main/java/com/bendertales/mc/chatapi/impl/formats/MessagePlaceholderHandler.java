@@ -1,10 +1,10 @@
 package com.bendertales.mc.chatapi.impl.formats;
 
 import com.bendertales.mc.chatapi.ChatConstants;
-import com.bendertales.mc.chatapi.api.AbstractPlaceholderHandler;
-import com.bendertales.mc.chatapi.api.Message;
-import com.bendertales.mc.chatapi.api.PlaceholderFormatter;
-import com.bendertales.mc.chatapi.api.PlaceholderHandler;
+import fr.bendertales.mc.channels.api.AbstractPlaceholderHandler;
+import fr.bendertales.mc.channels.api.Message;
+import fr.bendertales.mc.channels.api.PlaceholderFormatter;
+import fr.bendertales.mc.channels.api.PlaceholderHandler;
 import net.minecraft.util.Identifier;
 
 

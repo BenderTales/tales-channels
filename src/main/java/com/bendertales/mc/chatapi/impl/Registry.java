@@ -7,9 +7,9 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import com.bendertales.mc.chatapi.api.Identifiable;
-import com.bendertales.mc.chatapi.api.ModChannelImplementationsProvider;
-import com.bendertales.mc.chatapi.api.PlaceholderHandler;
+import fr.bendertales.mc.channels.api.Identifiable;
+import fr.bendertales.mc.channels.api.ModChannelImplementationsProvider;
+import fr.bendertales.mc.channels.api.PlaceholderHandler;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
