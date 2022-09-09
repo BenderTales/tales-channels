@@ -87,10 +87,11 @@ publishing {
     }
     repositories {
         maven {
-            url "https://maven.pkg.jetbrains.space/tales-of-bender/p/mcsrv/maven"
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/BenderTales/BenderTales")
             credentials {
-                username = TOB_SPACE_USERNAME
-                password = TOB_SPACE_PASSWORD
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
         }
     }

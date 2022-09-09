@@ -4,7 +4,7 @@
   "package": "com.bendertales.mc.chatapi.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerManagerMixin"
+    "fr.bendertales.mc.chatapi.mixin.PlayerManagerMixin"
   ],
   "client": [
   ],

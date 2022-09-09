@@ -15,10 +15,10 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.bendertales.mc.chatapi.client.ChatApiClient"
+      "fr.bendertales.mc.chatapi.client.ChatApiClient"
     ],
     "main": [
-      "com.bendertales.mc.chatapi.ChatApi"
+      "fr.bendertales.mc.chatapi.ChatApi"
     ]
   },
   "mixins": [
