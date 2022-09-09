@@ -21,13 +21,6 @@ repositories {
             password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
         }
     }
-    maven {
-        url "https://maven.pkg.jetbrains.space/tales-of-bender/p/mcsrv/maven"
-        credentials {
-            username = "$TOB_SPACE_USERNAME"
-            password = "$TOB_SPACE_PASSWORD"
-        }
-    }
 }
 
 dependencies {
@@ -39,7 +32,7 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "com.bendertales.mc:tales-server-common:1.19.2_1.0.0-SNAPSHOT.7"
+    modImplementation "fr.bendertales.mc:tales-server-common:1.19.2-1.0.0+RC"
     include(modImplementation "fr.bendertales.mc:tales-channels-api:1.19.2-1.0.0+RC")
 }
 

@@ -7,9 +7,9 @@ import java.util.UUID;
 import com.bendertales.mc.chatapi.ChatConstants;
 import com.bendertales.mc.chatapi.config.PlayerProperties;
 import com.bendertales.mc.chatapi.impl.vo.PlayerSettings;
-import com.bendertales.mc.talesservercommon.repository.data.AbstractPlayerDataRepository;
-import com.bendertales.mc.talesservercommon.repository.serialization.CommonSerializers;
-import com.bendertales.mc.talesservercommon.repository.serialization.JsonSerializerRegistration;
+import fr.bendertales.mc.talesservercommon.repository.data.AbstractPlayerDataRepository;
+import fr.bendertales.mc.talesservercommon.repository.serialization.CommonSerializers;
+import fr.bendertales.mc.talesservercommon.repository.serialization.JsonSerializerRegistration;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 

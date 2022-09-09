@@ -1,10 +1,10 @@
 package com.bendertales.mc.chatapi.command.shortcuts;
 
-import com.bendertales.mc.talesservercommon.commands.TalesCommand;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.bendertales.mc.channels.api.ChatException;
 import fr.bendertales.mc.channels.api.Messenger;
+import fr.bendertales.mc.talesservercommon.commands.TalesCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 

@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.bendertales.mc.chatapi.command.subcommands.CmdRespond;
 import com.bendertales.mc.chatapi.impl.ChatManager;
-import com.bendertales.mc.talesservercommon.commands.CommandNodeRequirements;
-import com.bendertales.mc.talesservercommon.commands.TalesCommandNode;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fr.bendertales.mc.talesservercommon.commands.CommandNodeRequirements;
+import fr.bendertales.mc.talesservercommon.commands.TalesCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 
 import static net.minecraft.server.command.CommandManager.argument;

@@ -10,7 +10,7 @@ import com.bendertales.mc.chatapi.impl.channels.AdminChannel;
 import com.bendertales.mc.chatapi.impl.channels.HelpersChannel;
 import com.bendertales.mc.chatapi.impl.channels.ModerationChannel;
 import com.bendertales.mc.chatapi.impl.channels.StaffChannel;
-import com.bendertales.mc.talesservercommon.commands.TalesCommandNode;
+import fr.bendertales.mc.talesservercommon.commands.TalesCommandNode;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 

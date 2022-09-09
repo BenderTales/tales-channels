@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.bendertales.mc.chatapi.command.nodes.chatapi.NodeReload;
 import com.bendertales.mc.chatapi.impl.ChatManager;
-import com.bendertales.mc.talesservercommon.commands.AbstractIntermediaryCommandNode;
+import fr.bendertales.mc.talesservercommon.commands.AbstractIntermediaryCommandNode;
 
 
 public class NodeChatapi extends AbstractIntermediaryCommandNode {

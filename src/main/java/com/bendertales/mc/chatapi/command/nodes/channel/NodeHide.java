@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.bendertales.mc.chatapi.command.suggestions.SenderChannelsSuggestionProvider;
 import com.bendertales.mc.chatapi.impl.ChatManager;
-import com.bendertales.mc.talesservercommon.commands.AbstractIntermediaryCommandNode;
-import com.bendertales.mc.talesservercommon.commands.CommandNodeRequirements;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fr.bendertales.mc.talesservercommon.commands.AbstractIntermediaryCommandNode;
+import fr.bendertales.mc.talesservercommon.commands.CommandNodeRequirements;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 
