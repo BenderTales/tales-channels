@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "tales-chat-api",
+  "id": "tales-channels",
   "version": "${version}",
-  "name": "Chat Api",
+  "name": "Tales Channels",
   "description": "",
   "authors": [
     "Nokorbis"
@@ -15,10 +15,10 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "fr.bendertales.mc.chatapi.client.ChatApiClient"
+      "fr.bendertales.mc.channels.client.ChatApiClient"
     ],
     "main": [
-      "fr.bendertales.mc.chatapi.ChatApi"
+      "fr.bendertales.mc.channels.TalesChannels"
     ]
   },
   "mixins": [
